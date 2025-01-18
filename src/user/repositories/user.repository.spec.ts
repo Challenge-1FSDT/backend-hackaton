@@ -2,7 +2,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ERole } from '../../auth/constants/role.constant';
 import { User } from '../entities/user.entity';
 import { UserRepository } from './user.repository';
 
@@ -45,8 +45,8 @@ describe('UserRepository', () => {
         name: 'Default User',
         username: 'default-user',
         password: 'random-password',
-        roles: [ROLE.USER],
-        isAccountDisabled: false,
+        role: [ERole.USER],
+        isDisabled: false,
         email: 'default-user@random.com',
         createdAt: currentDate,
         updatedAt: currentDate,
@@ -64,8 +64,8 @@ describe('UserRepository', () => {
         name: 'Default User',
         username: 'default-user',
         password: 'random-password',
-        roles: [ROLE.USER],
-        isAccountDisabled: false,
+        role: [ERole.USER],
+        isDisabled: false,
         email: 'default-user@random.com',
         createdAt: currentDate,
         updatedAt: currentDate,

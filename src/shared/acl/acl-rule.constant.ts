@@ -1,4 +1,4 @@
-import { ROLE } from './../../auth/constants/role.constant';
+import { ERole } from './../../auth/constants/role.constant';
 import { Action } from './action.constant';
 import { Actor } from './actor.constant';
 
@@ -15,7 +15,7 @@ export type RuleCallback<Resource> = (
  */
 export type AclRule<Resource> = {
   //if rule for particular role or for all role
-  role: ROLE;
+  role: ERole;
 
   //list of actions permissible
   actions: Action[];

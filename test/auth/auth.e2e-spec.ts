@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 
-import { ROLE } from '../../src/auth/constants/role.constant';
+import { ERole } from '../../src/auth/constants/role.constant';
 import { LoginInput } from '../../src/auth/dtos/auth-login-input.dto';
 import { RefreshTokenInput } from '../../src/auth/dtos/auth-refresh-token-input.dto';
 import { RegisterInput } from '../../src/auth/dtos/auth-register-input.dto';
@@ -47,8 +47,8 @@ describe('AuthController (e2e)', () => {
       name: 'e2etester',
       username: 'e2etester',
       password: '12345678',
-      roles: [ROLE.USER],
-      isAccountDisabled: false,
+      roles: [ERole.USER],
+      isDisabled: false,
       email: 'e2etester@random.com',
     };
 
@@ -56,8 +56,8 @@ describe('AuthController (e2e)', () => {
       id: 2,
       name: 'e2etester',
       username: 'e2etester',
-      roles: [ROLE.USER],
-      isAccountDisabled: false,
+      roles: [ERole.USER],
+      isDisabled: false,
       email: 'e2etester@random.com',
     };
 
@@ -112,7 +112,7 @@ describe('AuthController (e2e)', () => {
         .expect(HttpStatus.UNAUTHORIZED);
     });
 
-    // TODO: Should fail when isAccountDisabled is set to true.
+    // TODO: Should fail when isDisabled is set to true.
   });
 
   describe('Refreshing JWT token', () => {

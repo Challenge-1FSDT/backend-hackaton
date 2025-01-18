@@ -25,8 +25,8 @@ export class JwtAuthStrategy extends PassportStrategy(
     // and assigns it to the Request object as req.user
     return {
       id: payload.sub,
-      username: payload.username,
-      roles: payload.roles,
+      email: payload.email,
+      role: payload.role,
     };
   }
 }

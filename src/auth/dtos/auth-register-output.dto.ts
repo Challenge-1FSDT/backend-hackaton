@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-import { ROLE } from '../constants/role.constant';
+import { ERole } from '../constants/role.constant';
 
 export class RegisterOutput {
   @Expose()
@@ -10,15 +10,11 @@ export class RegisterOutput {
 
   @Expose()
   @ApiProperty()
-  name: string;
+  firstName: string;
 
   @Expose()
   @ApiProperty()
-  username: string;
-
-  @Expose()
-  @ApiProperty({ example: [ROLE.USER] })
-  roles: ROLE[];
+  lastName?: string;
 
   @Expose()
   @ApiProperty()
@@ -26,7 +22,19 @@ export class RegisterOutput {
 
   @Expose()
   @ApiProperty()
-  isAccountDisabled: boolean;
+  phone?: string;
+
+  @Expose()
+  @ApiProperty()
+  taxId?: string;
+
+  @Expose()
+  @ApiProperty({ example: ERole.USER })
+  role: ERole;
+
+  @Expose()
+  @ApiProperty()
+  isDisabled: boolean;
 
   @Expose()
   @ApiProperty()
@@ -35,4 +43,8 @@ export class RegisterOutput {
   @Expose()
   @ApiProperty()
   updatedAt: string;
+
+  @Expose()
+  @ApiProperty()
+  deletedAt?: string;
 }

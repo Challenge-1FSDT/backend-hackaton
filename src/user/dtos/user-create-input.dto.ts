@@ -1,32 +1,50 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
-  ArrayNotEmpty,
-  IsAlphanumeric,
-  IsArray,
-  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
   IsOptional,
+  IsPhoneNumber,
   IsString,
   Length,
   MaxLength,
 } from 'class-validator';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ERole } from '../../auth/constants/role.constant';
+import { IsCPF } from '../../shared/validators/isCPF';
 
 export class CreateUserInput {
-  @ApiPropertyOptional()
-  @IsOptional()
+  @ApiProperty()
   @IsNotEmpty()
   @IsString()
-  name: string;
+  @MaxLength(200)
+  firstName: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  lastName?: string;
 
   @ApiProperty()
   @IsNotEmpty()
-  @Length(6, 100)
-  @IsAlphanumeric()
-  username: string;
+  @IsEmail()
+  @MaxLength(200)
+  email: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsPhoneNumber('BR')
+  @MaxLength(200)
+  phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsCPF()
+  @MaxLength(11)
+  taxId?: string;
 
   @ApiProperty()
   @IsNotEmpty()
@@ -34,19 +52,9 @@ export class CreateUserInput {
   @Length(6, 100)
   password: string;
 
-  @ApiProperty()
-  @IsArray()
-  @ArrayNotEmpty()
-  @IsEnum(ROLE, { each: true })
-  roles: ROLE[];
-
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
-  @IsEmail()
-  @MaxLength(100)
-  email: string;
-
-  @ApiProperty()
-  @IsBoolean()
-  isAccountDisabled: boolean;
+  @IsEnum(ERole)
+  role: ERole;
 }

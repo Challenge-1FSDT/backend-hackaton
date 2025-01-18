@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { createConnection, getConnection } from 'typeorm';
 
-import { ROLE } from '../src/auth/constants/role.constant';
+import { ERole } from '../src/auth/constants/role.constant';
 import { LoginInput } from '../src/auth/dtos/auth-login-input.dto';
 import { AuthTokenOutput } from '../src/auth/dtos/auth-token-output.dto';
 import { RequestContext } from '../src/shared/request-context/request-context.dto';
@@ -58,8 +58,8 @@ export const seedAdminUser = async (
     name: 'Default Admin User',
     username: 'default-admin',
     password: 'default-admin-password',
-    roles: [ROLE.ADMIN],
-    isAccountDisabled: false,
+    roles: [ERole.ADMIN],
+    isDisabled: false,
     email: 'default-admin@example.com',
   };
 

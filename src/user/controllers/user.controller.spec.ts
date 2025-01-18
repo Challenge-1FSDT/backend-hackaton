@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ROLE } from '../../auth/constants/role.constant';
+import { ERole } from '../../auth/constants/role.constant';
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
@@ -18,7 +18,7 @@ describe('UserController', () => {
   };
 
   const mockedLogger = { setContext: jest.fn(), log: jest.fn() };
-
+  
   beforeEach(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       controllers: [UserController],
@@ -55,8 +55,8 @@ describe('UserController', () => {
     id: 1,
     username: 'default-user',
     name: 'default-name',
-    roles: [ROLE.USER],
-    isAccountDisabled: false,
+    roles: [ERole.USER],
+    isDisabled: false,
     email: 'e2etester@random.com',
     createdAt: currentDate,
     updatedAt: currentDate,

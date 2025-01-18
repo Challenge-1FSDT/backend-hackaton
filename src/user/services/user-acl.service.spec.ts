@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { ROLE } from './../../auth/constants/role.constant';
+import { ERole } from './../../auth/constants/role.constant';
 import { Action } from './../../shared/acl/action.constant';
 import { UserAclService } from './user-acl.service';
 
@@ -25,7 +25,7 @@ describe('UserAclService', () => {
       const user = {
         id: 6,
         username: 'admin',
-        roles: [ROLE.ADMIN],
+        roles: [ERole.ADMIN],
       };
       userAcl = service.forActor(user);
     });
@@ -56,7 +56,7 @@ describe('UserAclService', () => {
       user = {
         id: 11,
         username: 'jeo',
-        roles: [ROLE.USER],
+        roles: [ERole.USER],
       };
       userAcl = service.forActor(user);
     });

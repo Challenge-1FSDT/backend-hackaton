@@ -1,39 +1,62 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
+  IsOptional,
+  IsPhoneNumber,
   IsString,
   Length,
   MaxLength,
 } from 'class-validator';
 
-import { ROLE } from '../constants/role.constant';
+import { IsCPF } from '../../shared/validators/isCPF';
+import { ERole } from '../constants/role.constant';
 
 export class RegisterInput {
   @ApiProperty()
   @IsNotEmpty()
-  @MaxLength(100)
   @IsString()
-  name: string;
-
-  @ApiProperty()
   @MaxLength(200)
-  @IsString()
-  username: string;
+  firstName: string;
 
-  @ApiProperty()
+  @ApiPropertyOptional()
+  @IsOptional()
   @IsNotEmpty()
-  @Length(6, 100)
   @IsString()
-  password: string;
+  @MaxLength(200)
+  lastName?: string;
 
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
-  @MaxLength(100)
+  @MaxLength(200)
   email: string;
 
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsPhoneNumber('BR')
+  @MaxLength(200)
+  phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsCPF()
+  @MaxLength(11)
+  taxId?: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 100)
+  password: string;
+
   // These keys can only be set by ADMIN user.
-  roles: ROLE[] = [ROLE.USER];
-  isAccountDisabled: boolean;
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsNotEmpty()
+  @IsEnum(ERole)
+  role: ERole;
 }

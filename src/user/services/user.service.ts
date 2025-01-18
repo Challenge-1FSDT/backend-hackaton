@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
-import { plainToClass } from 'class-transformer';
+import { plainToClass, plainToInstance } from 'class-transformer';
 
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
@@ -18,6 +18,7 @@ export class UserService {
   ) {
     this.logger.setContext(UserService.name);
   }
+
   async createUser(
     ctx: RequestContext,
     input: CreateUserInput,
@@ -36,15 +37,15 @@ export class UserService {
     });
   }
 
-  async validateUsernamePassword(
+  async validateEmailPassword(
     ctx: RequestContext,
-    username: string,
+    email: string,
     pass: string,
   ): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.validateUsernamePassword.name} was called`);
+    this.logger.log(ctx, `${this.validateEmailPassword.name} was called`);
 
     this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
-    const user = await this.repository.findOne({ where: { username } });
+    const user = await this.repository.findOne({ where: { email } });
     if (!user) throw new UnauthorizedException();
 
     const match = await compare(pass, user.password);
@@ -69,7 +70,7 @@ export class UserService {
       skip: offset,
     });
 
-    const usersOutput = plainToClass(UserOutput, users, {
+    const usersOutput = plainToInstance(UserOutput, users, {
       excludeExtraneousValues: true,
     });
 
@@ -82,7 +83,7 @@ export class UserService {
     this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
     const user = await this.repository.findOne({ where: { id } });
 
-    return plainToClass(UserOutput, user, {
+    return plainToInstance(UserOutput, user, {
       excludeExtraneousValues: true,
     });
   }
@@ -93,21 +94,18 @@ export class UserService {
     this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
     const user = await this.repository.getById(id);
 
-    return plainToClass(UserOutput, user, {
+    return plainToInstance(UserOutput, user, {
       excludeExtraneousValues: true,
     });
   }
 
-  async findByUsername(
-    ctx: RequestContext,
-    username: string,
-  ): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.findByUsername.name} was called`);
+  async findByEmail(ctx: RequestContext, email: string): Promise<UserOutput> {
+    this.logger.log(ctx, `${this.findByEmail.name} was called`);
 
     this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
-    const user = await this.repository.findOne({ where: { username } });
+    const user = await this.repository.findOne({ where: { email } });
 
-    return plainToClass(UserOutput, user, {
+    return plainToInstance(UserOutput, user, {
       excludeExtraneousValues: true,
     });
   }
@@ -136,7 +134,7 @@ export class UserService {
     this.logger.log(ctx, `calling ${UserRepository.name}.save`);
     await this.repository.save(updatedUser);
 
-    return plainToClass(UserOutput, updatedUser, {
+    return plainToInstance(UserOutput, updatedUser, {
       excludeExtraneousValues: true,
     });
   }

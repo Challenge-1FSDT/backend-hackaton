@@ -15,7 +15,7 @@ services:
     environment:
       APP_ENV: ${APP_ENV}
       APP_PORT: ${APP_PORT}
-      DB_HOST: pgsqldb
+      DB_HOST: postgres
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
       DB_USER: ${DB_USER}
@@ -26,10 +26,10 @@ services:
       JWT_PRIVATE_KEY_BASE64: ${JWT_PRIVATE_KEY_BASE64}
       DEFAULT_ADMIN_USER_PASSWORD: ${DEFAULT_ADMIN_USER_PASSWORD}
     depends_on:
-      - pgsqldb
+      - postgres
 
-  pgsqldb:
-    image: postgres:16.3
+  postgres:
+    image: postgis/postgis
     environment:
       POSTGRES_USER: "${DB_USER}"
       POSTGRES_PASSWORD: "${DB_PASS}"
@@ -37,15 +37,8 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - pgsqldata:/var/lib/postgresql/data
-
-  adminer:
-    image: adminer
-    ports:
-      - 8080:8080
-    depends_on:
-      - pgsqldb
+      - pgdata:/var/lib/postgresql/data
 
 volumes:
   node_modules:
-  pgsqldata:
+  pgdata:

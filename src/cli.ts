@@ -2,7 +2,7 @@ import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 
 import { AppModule } from './app.module';
-import { ROLE } from './auth/constants/role.constant';
+import { ERole } from './auth/constants/role.constant';
 import { RequestContext } from './shared/request-context/request-context.dto';
 import { CreateUserInput } from './user/dtos/user-create-input.dto';
 import { UserService } from './user/services/user.service';
@@ -18,22 +18,21 @@ async function bootstrap() {
   const userService = app.get(UserService);
 
   const defaultAdmin: CreateUserInput = {
-    name: 'Default Admin User',
-    username: 'default-admin',
+    firstName: 'Default Admin',
     password: defaultAdminUserPassword,
-    roles: [ROLE.ADMIN],
-    isAccountDisabled: false,
+    role: ERole.ADMIN,
     email: 'default-admin@example.com',
   };
 
   const ctx = new RequestContext();
 
   // Create the default admin user if it doesn't already exist.
-  const user = await userService.findByUsername(ctx, defaultAdmin.username);
+  const user = await userService.findByEmail(ctx, defaultAdmin.email);
   if (!user) {
     await userService.createUser(ctx, defaultAdmin);
   }
 
   await app.close();
 }
+
 bootstrap();

@@ -7,7 +7,7 @@ import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
-import { ROLE } from '../constants/role.constant';
+import { ERole } from '../constants/role.constant';
 import {
   AuthTokenOutput,
   UserAccessTokenClaims,
@@ -20,15 +20,15 @@ describe('AuthService', () => {
   const accessTokenClaims: UserAccessTokenClaims = {
     id: 6,
     username: 'john',
-    roles: [ROLE.USER],
+    roles: [ERole.USER],
   };
 
   const registerInput = {
     username: 'jhon',
     name: 'Jhon doe',
     password: 'any password',
-    roles: [ROLE.USER],
-    isAccountDisabled: false,
+    roles: [ERole.USER],
+    isDisabled: false,
     email: 'randomUser@random.com',
   };
 
@@ -36,7 +36,7 @@ describe('AuthService', () => {
 
   const userOutput: UserOutput = {
     name: 'John doe',
-    isAccountDisabled: false,
+    isDisabled: false,
     email: 'randomUser@random.com',
     createdAt: currentDate,
     updatedAt: currentDate,
@@ -113,7 +113,7 @@ describe('AuthService', () => {
     it('should fail when user account is disabled', async () => {
       jest
         .spyOn(mockedUserService, 'validateUsernamePassword')
-        .mockImplementation(() => ({ ...userOutput, isAccountDisabled: true }));
+        .mockImplementation(() => ({ ...userOutput, isDisabled: true }));
 
       await expect(
         service.validateUser(ctx, 'jhon', 'somepass'),
@@ -179,13 +179,13 @@ describe('AuthService', () => {
   describe('getAuthToken', () => {
     const accessTokenExpiry = 100;
     const refreshTokenExpiry = 200;
-    const user = { id: 5, username: 'username', roles: [ROLE.USER] };
+    const user = { id: 5, username: 'username', roles: [ERole.USER] };
 
     const subject = { sub: user.id };
     const payload = {
       username: user.username,
       sub: user.id,
-      roles: [ROLE.USER],
+      roles: [ERole.USER],
     };
 
     beforeEach(() => {

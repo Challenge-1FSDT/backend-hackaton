@@ -7,7 +7,7 @@ import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
-import { ROLE } from '../constants/role.constant';
+import { ERole } from '../constants/role.constant';
 import { RegisterInput } from '../dtos/auth-register-input.dto';
 import { RegisterOutput } from '../dtos/auth-register-output.dto';
 import {
@@ -28,20 +28,16 @@ export class AuthService {
 
   async validateUser(
     ctx: RequestContext,
-    username: string,
+    email: string,
     pass: string,
   ): Promise<UserAccessTokenClaims> {
     this.logger.log(ctx, `${this.validateUser.name} was called`);
 
     // The userService will throw Unauthorized in case of invalid username/password.
-    const user = await this.userService.validateUsernamePassword(
-      ctx,
-      username,
-      pass,
-    );
+    const user = await this.userService.validateEmailPassword(ctx, email, pass);
 
     // Prevent disabled users from logging in.
-    if (user.isAccountDisabled) {
+    if (user.isDisabled) {
       throw new UnauthorizedException('This user account has been disabled');
     }
 
@@ -61,8 +57,7 @@ export class AuthService {
     this.logger.log(ctx, `${this.register.name} was called`);
 
     // TODO : Setting default role as USER here. Will add option to change this later via ADMIN users.
-    input.roles = [ROLE.USER];
-    input.isAccountDisabled = false;
+    input.role = ERole.USER;
 
     const registeredUser = await this.userService.createUser(ctx, input);
     return plainToClass(RegisterOutput, registeredUser, {
@@ -89,9 +84,9 @@ export class AuthService {
 
     const subject = { sub: user.id };
     const payload = {
-      username: user.username,
+      email: user.email,
       sub: user.id,
-      roles: user.roles,
+      role: user.role,
     };
 
     const authToken = {
