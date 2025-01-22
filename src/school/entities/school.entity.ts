@@ -1,62 +1,62 @@
 import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  OneToMany,
-  Point,
-  PrimaryGeneratedColumn,
-  Unique,
-  UpdateDateColumn,
+    Column,
+    CreateDateColumn,
+    DeleteDateColumn,
+    Entity,
+    OneToMany,
+    Point,
+    PrimaryGeneratedColumn,
+    Unique,
+    UpdateDateColumn,
 } from 'typeorm';
 
 import { Classroom } from '../../classroom/entities/classroom.entity';
-import { SchoolMember } from './schoolMember.entity';
+import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
 
 @Entity('schools')
 export class School {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ length: 200 })
-  name: string;
+    @Column({ length: 200 })
+    name: string;
 
-  @Column({ length: 200 })
-  fantasyName?: string;
+    @Column({ length: 200 })
+    fantasyName?: string;
 
-  @Unique('taxId', ['taxId'])
-  @Column({ length: 14 })
-  taxId: string;
+    @Unique('taxId', ['taxId'])
+    @Column({ length: 14 })
+    taxId: string;
 
-  @Column({ length: 200 })
-  address: string;
+    @Column({ length: 200 })
+    address: string;
 
-  @Column({ length: 200 })
-  city: string;
+    @Column({ length: 200 })
+    city: string;
 
-  @Column({ length: 2 })
-  state: string;
+    @Column({ length: 2 })
+    state: string;
 
-  @Column({ type: 'geometry' })
-  location: Point;
+    @Column({ type: 'geometry' })
+    location: Point;
 
-  @Column({ default: 50 })
-  locationRadius: number;
+    @Column({ default: 50 })
+    locationRadius: number;
 
-  // * Relations
-  @OneToMany(() => Classroom, (classroom) => classroom.school)
-  classrooms: Promise<Classroom[]>;
+    // * Relations
+    @OneToMany(() => Classroom, (classroom) => classroom.school)
+    classrooms: Promise<Classroom[]>;
 
-  @OneToMany(() => SchoolMember, (schoolMember) => schoolMember.school)
-  members: Promise<SchoolMember[]>;
+    @OneToMany(() => SchoolMember, (schoolMember) => schoolMember.school)
+    members: Promise<SchoolMember[]>;
 
-  // * Timestamps
-  @CreateDateColumn({ name: 'createdAt' })
-  createdAt: Date;
+    // * Timestamps
+    @CreateDateColumn({ name: 'createdAt' })
+    createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updatedAt' })
-  updatedAt: Date;
+    @UpdateDateColumn({ name: 'updatedAt' })
+    updatedAt: Date;
 
-  @DeleteDateColumn({ name: 'deletedAt', nullable: true })
-  deletedAt?: Date;
+    @DeleteDateColumn({ name: 'deletedAt', nullable: true })
+    deletedAt?: Date;
 }

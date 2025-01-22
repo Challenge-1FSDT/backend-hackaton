@@ -4,10 +4,10 @@ import {
     ValidationOptions,
 } from 'class-validator';
 
-export function IsCPF(validationOptions?: ValidationOptions) {
+export function IsCNPJ(validationOptions?: ValidationOptions) {
     return function (object: NonNullable<unknown>, propertyName: string) {
         registerDecorator({
-            name: 'isCPF',
+            name: 'isCNPJ',
             target: object.constructor,
             propertyName,
             options: validationOptions,
@@ -15,9 +15,8 @@ export function IsCPF(validationOptions?: ValidationOptions) {
                 validate(value: any): Promise<boolean> | boolean {
                     if (
                         !isString(value) ||
-                        !/^[0-9]{11}$/.test(value) || // Not CPF length
-                        /^\b(\d)\1+\b$/.test(value) || // All digits are the same
-                        '12345678909'.includes(value) // Known invalid CPF
+                        !/^[0-9]{14}$/.test(value) || // Not CNPJ length
+                        /^\b(\d)\1+\b$/.test(value) // All digits are the same
                     ) {
                         return false;
                     }
@@ -27,15 +26,15 @@ export function IsCPF(validationOptions?: ValidationOptions) {
                         .map((digit) => parseInt(digit));
 
                     const verifierDigit1 = calculateVerifierDigit(
-                        digits.slice(0, 9),
+                        digits.slice(0, 12),
                     );
                     const verifierDigit2 = calculateVerifierDigit(
-                        digits.slice(0, 10),
+                        digits.slice(0, 13),
                     );
 
                     return (
-                        verifierDigit1 === digits[9] &&
-                        verifierDigit2 === digits[10]
+                        verifierDigit1 === digits[12] &&
+                        verifierDigit2 === digits[13]
                     );
                 },
             },
@@ -44,8 +43,11 @@ export function IsCPF(validationOptions?: ValidationOptions) {
 }
 
 const calculateVerifierDigit = (digits: number[]): number => {
-    const sum = digits.reduce((acc, digit, index) => {
-        return acc + digit * (digits.length + 1 - index);
+    let index = 2;
+    const sum = digits.reduce((acc, digit) => {
+        const current = digit * index;
+        index = index === 9 ? 2 : index + 1;
+        return acc + current;
     }, 0);
 
     const remainder = sum % 11;

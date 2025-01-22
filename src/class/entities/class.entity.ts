@@ -1,52 +1,52 @@
 import {
-  Column,
-  CreateDateColumn,
-  DeleteDateColumn,
-  Entity,
-  JoinTable,
-  ManyToMany,
-  ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+    Column,
+    CreateDateColumn,
+    DeleteDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 
 import { Lecture } from '../../lecture/entities/lecture.entity';
 import { School } from '../../school/entities/school.entity';
-import { SchoolMember } from '../../school/entities/schoolMember.entity';
+import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
 
 @Entity('classes')
 export class Class {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({ length: 200 })
-  name: string;
+    @Column({ length: 200 })
+    name: string;
 
-  @Column()
-  startAt: Date;
+    @Column()
+    startAt: Date;
 
-  @Column()
-  endAt: Date;
+    @Column()
+    endAt: Date;
 
-  // * Relations
-  @ManyToOne(() => School, (school) => school.classrooms)
-  school: School;
+    // * Relations
+    @ManyToOne(() => School, (school) => school.classrooms)
+    school: School;
 
-  @ManyToMany(() => SchoolMember, (schoolMember) => schoolMember.classes)
-  @JoinTable({ name: 'class_students' })
-  students: Promise<SchoolMember[]>;
+    @ManyToMany(() => SchoolMember, (schoolMember) => schoolMember.classes)
+    @JoinTable({ name: 'class_students' })
+    students: Promise<SchoolMember[]>;
 
-  @OneToMany(() => Lecture, (lecture) => lecture.class)
-  lectures: Promise<Lecture[]>;
+    @OneToMany(() => Lecture, (lecture) => lecture.class)
+    lectures: Promise<Lecture[]>;
 
-  // * Timestamps
-  @CreateDateColumn({ name: 'createdAt' })
-  createdAt: Date;
+    // * Timestamps
+    @CreateDateColumn({ name: 'createdAt' })
+    createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updatedAt' })
-  updatedAt: Date;
+    @UpdateDateColumn({ name: 'updatedAt' })
+    updatedAt: Date;
 
-  @DeleteDateColumn({ name: 'deletedAt', nullable: true })
-  deletedAt?: Date;
+    @DeleteDateColumn({ name: 'deletedAt', nullable: true })
+    deletedAt?: Date;
 }

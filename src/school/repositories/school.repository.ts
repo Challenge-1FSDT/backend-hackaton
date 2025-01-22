@@ -5,16 +5,16 @@ import { School } from '../entities/school.entity';
 
 @Injectable()
 export class SchoolRepository extends Repository<School> {
-  constructor(private readonly dataSource: DataSource) {
-    super(School, dataSource.createEntityManager());
-  }
-
-  public async getById(id: number): Promise<School> {
-    const school = await this.findOne({ where: { id } });
-    if (!school) {
-      throw new NotFoundException();
+    constructor(private readonly dataSource: DataSource) {
+        super(School, dataSource.createEntityManager());
     }
 
-    return school;
-  }
+    public async getById(id: number): Promise<School> {
+        const school = await this.findOne({ where: { id } });
+        if (!school) {
+            throw new NotFoundException();
+        }
+
+        return school;
+    }
 }

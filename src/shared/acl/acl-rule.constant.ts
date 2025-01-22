@@ -1,4 +1,3 @@
-import { ERole } from './../../auth/constants/role.constant';
 import { Action } from './action.constant';
 import { Actor } from './actor.constant';
 
@@ -6,20 +5,20 @@ import { Actor } from './actor.constant';
  * Custom rule callback definition
  */
 export type RuleCallback<Resource> = (
-  resource: Resource,
-  actor: Actor,
-) => boolean;
+    resource: Resource,
+    actor: Actor,
+) => Promise<boolean> | boolean;
 
 /**
  * ACL rule format
  */
-export type AclRule<Resource> = {
-  //if rule for particular role or for all role
-  role: ERole;
+export type AclRule<RoleEnum, Resource> = {
+    //if rule for particular role or for all role
+    role: RoleEnum;
 
-  //list of actions permissible
-  actions: Action[];
+    //list of actions permissible
+    actions: Action[];
 
-  //specific rule there or otherwise true
-  ruleCallback?: RuleCallback<Resource>;
+    //specific rule there or otherwise true
+    ruleCallback?: RuleCallback<Resource>;
 };

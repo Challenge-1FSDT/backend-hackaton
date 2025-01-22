@@ -7,19 +7,19 @@ import { Actor } from '../../shared/acl/actor.constant';
 import { Article } from '../entities/article.entity';
 
 @Injectable()
-export class ArticleAclService extends BaseAclService<Article> {
-  constructor() {
-    super();
-    this.canDo(ERole.ADMIN, [Action.Manage]);
-    this.canDo(ERole.USER, [Action.Create, Action.List, Action.Read]);
-    this.canDo(
-      ERole.USER,
-      [Action.Update, Action.Delete],
-      this.isArticleAuthor,
-    );
-  }
+export class ArticleAclService extends BaseAclService<ERole, Article> {
+    constructor() {
+        super();
+        this.canDo(ERole.ADMIN, [Action.Manage]);
+        this.canDo(ERole.USER, [Action.Create, Action.List, Action.Read]);
+        this.canDo(
+            ERole.USER,
+            [Action.Update, Action.Delete],
+            this.isArticleAuthor,
+        );
+    }
 
-  isArticleAuthor(article: Article, user: Actor): boolean {
-    return article.author.id === user.id;
-  }
+    isArticleAuthor(article: Article, user: Actor): boolean {
+        return article.author.id === user.id;
+    }
 }
