@@ -21,7 +21,7 @@ async function bootstrap() {
         firstName: 'Default Admin',
         password: defaultAdminUserPassword,
         role: ERole.ADMIN,
-        email: 'default-admin@example.com',
+        email: 'default@admin.com',
     };
 
     const ctx = new RequestContext();

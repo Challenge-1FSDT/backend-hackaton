@@ -10,7 +10,7 @@ export function IsCNPJ(validationOptions?: ValidationOptions) {
             name: 'isCNPJ',
             target: object.constructor,
             propertyName,
-            options: validationOptions,
+            options: { message: 'CNPJ is invalid', ...validationOptions },
             validator: {
                 validate(value: any): Promise<boolean> | boolean {
                     if (
@@ -27,9 +27,11 @@ export function IsCNPJ(validationOptions?: ValidationOptions) {
 
                     const verifierDigit1 = calculateVerifierDigit(
                         digits.slice(0, 12),
+                        5,
                     );
                     const verifierDigit2 = calculateVerifierDigit(
                         digits.slice(0, 13),
+                        6,
                     );
 
                     return (
@@ -42,11 +44,13 @@ export function IsCNPJ(validationOptions?: ValidationOptions) {
     };
 }
 
-const calculateVerifierDigit = (digits: number[]): number => {
-    let index = 2;
+const calculateVerifierDigit = (
+    digits: number[],
+    multiplier: number,
+): number => {
     const sum = digits.reduce((acc, digit) => {
-        const current = digit * index;
-        index = index === 9 ? 2 : index + 1;
+        const current = digit * multiplier;
+        multiplier = multiplier === 2 ? 9 : multiplier - 1;
         return acc + current;
     }, 0);
 

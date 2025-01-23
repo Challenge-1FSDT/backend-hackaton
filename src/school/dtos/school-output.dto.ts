@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
+import { Point } from 'typeorm';
 
 export class SchoolOutput {
     @Expose()
@@ -32,7 +33,10 @@ export class SchoolOutput {
 
     @Expose()
     @ApiProperty()
-    location: string;
+    @Transform(({ value }) => (value as Point).coordinates, {
+        toClassOnly: true,
+    })
+    location: number[];
 
     @Expose()
     @ApiProperty()

@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
 import {
     ArrayMaxSize,
     ArrayMinSize,
@@ -34,7 +33,7 @@ export class CreateSchoolInput {
     @IsOptional()
     @IsNotEmpty()
     @IsCNPJ()
-    @MaxLength(11)
+    @MaxLength(14)
     taxId: string;
 
     @ApiProperty()
@@ -59,11 +58,10 @@ export class CreateSchoolInput {
     @ArrayNotEmpty()
     @ArrayMinSize(2)
     @ArrayMaxSize(2)
-    @IsNumber(undefined, { each: true })
-    @Transform((value) => ({
-        type: 'Point',
-        coordinates: value,
-    }))
+    @IsNumber(
+        { allowNaN: false, allowInfinity: false, maxDecimalPlaces: 6 },
+        { each: true },
+    )
     location: Point; // number[]
 
     @ApiProperty()

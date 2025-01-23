@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import {
     Column,
     CreateDateColumn,
@@ -37,7 +38,13 @@ export class School {
     @Column({ length: 2 })
     state: string;
 
-    @Column({ type: 'geometry' })
+    @Column({ type: 'geometry', spatialFeatureType: 'Point' })
+    @Transform(
+        ({ value }) => ({ coordinates: value, type: 'Point' }) as Point,
+        {
+            toClassOnly: true,
+        },
+    )
     location: Point;
 
     @Column({ default: 50 })
