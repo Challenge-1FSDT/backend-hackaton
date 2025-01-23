@@ -1,33 +1,33 @@
 import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn,
+    Column,
+    CreateDateColumn,
+    Entity,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn,
 } from 'typeorm';
 
 import { User } from '../../user/entities/user.entity';
 
 @Entity('articles')
 export class Article {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column()
-  title: string;
+    @Column()
+    title: string;
 
-  @Column()
-  post: string;
+    @Column()
+    post: string;
 
-  @CreateDateColumn({ name: 'createdAt' })
-  createdAt: Date;
+    @CreateDateColumn({ name: 'createdAt' })
+    createdAt: Date;
 
-  @UpdateDateColumn({ name: 'updatedAt' })
-  updatedAt: Date;
+    @UpdateDateColumn({ name: 'updatedAt' })
+    updatedAt: Date;
 
-  @ManyToOne(() => User, (user) => user.articles, {
-    eager: true,
-  })
-  author: User;
+    @ManyToOne(() => User, (user) => user.articles, {
+        eager: true,
+    })
+    author: User;
 }

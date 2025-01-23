@@ -89,7 +89,7 @@ describe('AuthController (e2e)', () => {
 
   describe('Login the registered user', () => {
     const loginInput: LoginInput = {
-      username: 'e2etester',
+      email: 'e2etester',
       password: '12345678',
     };
 
@@ -117,7 +117,7 @@ describe('AuthController (e2e)', () => {
 
   describe('Refreshing JWT token', () => {
     const loginInput: LoginInput = {
-      username: 'e2etester',
+      email: 'e2etester',
       password: '12345678',
     };
 

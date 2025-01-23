@@ -10,9 +10,9 @@ import { UserService } from './services/user.service';
 import { UserAclService } from './services/user-acl.service';
 
 @Module({
-  imports: [SharedModule, TypeOrmModule.forFeature([User])],
-  providers: [UserService, JwtAuthStrategy, UserAclService, UserRepository],
-  controllers: [UserController],
-  exports: [UserService],
+    imports: [SharedModule, TypeOrmModule.forFeature([User])],
+    providers: [UserService, JwtAuthStrategy, UserAclService, UserRepository],
+    controllers: [UserController],
+    exports: [UserService],
 })
 export class UserModule {}

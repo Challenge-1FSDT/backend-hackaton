@@ -8,31 +8,31 @@ import { CreateUserInput } from './user/dtos/user-create-input.dto';
 import { UserService } from './user/services/user.service';
 
 async function bootstrap() {
-  const app = await NestFactory.createApplicationContext(AppModule);
+    const app = await NestFactory.createApplicationContext(AppModule);
 
-  const configService = app.get(ConfigService);
-  const defaultAdminUserPassword = configService.get<string>(
-    'defaultAdminUserPassword',
-  )!;
+    const configService = app.get(ConfigService);
+    const defaultAdminUserPassword = configService.get<string>(
+        'defaultAdminUserPassword',
+    )!;
 
-  const userService = app.get(UserService);
+    const userService = app.get(UserService);
 
-  const defaultAdmin: CreateUserInput = {
-    firstName: 'Default Admin',
-    password: defaultAdminUserPassword,
-    role: ERole.ADMIN,
-    email: 'default-admin@example.com',
-  };
+    const defaultAdmin: CreateUserInput = {
+        firstName: 'Default Admin',
+        password: defaultAdminUserPassword,
+        role: ERole.ADMIN,
+        email: 'default-admin@example.com',
+    };
 
-  const ctx = new RequestContext();
+    const ctx = new RequestContext();
 
-  // Create the default admin user if it doesn't already exist.
-  const user = await userService.findByEmail(ctx, defaultAdmin.email);
-  if (!user) {
-    await userService.createUser(ctx, defaultAdmin);
-  }
+    // Create the default admin user if it doesn't already exist.
+    const user = await userService.findByEmail(ctx, defaultAdmin.email);
+    if (!user) {
+        await userService.createUser(ctx, defaultAdmin);
+    }
 
-  await app.close();
+    await app.close();
 }
 
 bootstrap();

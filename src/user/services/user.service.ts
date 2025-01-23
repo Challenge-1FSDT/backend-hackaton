@@ -12,130 +12,130 @@ import { UserRepository } from '../repositories/user.repository';
 
 @Injectable()
 export class UserService {
-  constructor(
-    private repository: UserRepository,
-    private readonly logger: AppLogger,
-  ) {
-    this.logger.setContext(UserService.name);
-  }
-
-  async createUser(
-    ctx: RequestContext,
-    input: CreateUserInput,
-  ): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.createUser.name} was called`);
-
-    const user = plainToClass(User, input);
-
-    user.password = await hash(input.password, 10);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.saveUser`);
-    await this.repository.save(user);
-
-    return plainToClass(UserOutput, user, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async validateEmailPassword(
-    ctx: RequestContext,
-    email: string,
-    pass: string,
-  ): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.validateEmailPassword.name} was called`);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
-    const user = await this.repository.findOne({ where: { email } });
-    if (!user) throw new UnauthorizedException();
-
-    const match = await compare(pass, user.password);
-    if (!match) throw new UnauthorizedException();
-
-    return plainToClass(UserOutput, user, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async getUsers(
-    ctx: RequestContext,
-    limit: number,
-    offset: number,
-  ): Promise<{ users: UserOutput[]; count: number }> {
-    this.logger.log(ctx, `${this.getUsers.name} was called`);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.findAndCount`);
-    const [users, count] = await this.repository.findAndCount({
-      where: {},
-      take: limit,
-      skip: offset,
-    });
-
-    const usersOutput = plainToInstance(UserOutput, users, {
-      excludeExtraneousValues: true,
-    });
-
-    return { users: usersOutput, count };
-  }
-
-  async findById(ctx: RequestContext, id: number): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.findById.name} was called`);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
-    const user = await this.repository.findOne({ where: { id } });
-
-    return plainToInstance(UserOutput, user, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async getUserById(ctx: RequestContext, id: number): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.getUserById.name} was called`);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
-    const user = await this.repository.getById(id);
-
-    return plainToInstance(UserOutput, user, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async findByEmail(ctx: RequestContext, email: string): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.findByEmail.name} was called`);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
-    const user = await this.repository.findOne({ where: { email } });
-
-    return plainToInstance(UserOutput, user, {
-      excludeExtraneousValues: true,
-    });
-  }
-
-  async updateUser(
-    ctx: RequestContext,
-    userId: number,
-    input: UpdateUserInput,
-  ): Promise<UserOutput> {
-    this.logger.log(ctx, `${this.updateUser.name} was called`);
-
-    this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
-    const user = await this.repository.getById(userId);
-
-    // Hash the password if it exists in the input payload.
-    if (input.password) {
-      input.password = await hash(input.password, 10);
+    constructor(
+        private repository: UserRepository,
+        private readonly logger: AppLogger,
+    ) {
+        this.logger.setContext(UserService.name);
     }
 
-    // merges the input (2nd line) to the found user (1st line)
-    const updatedUser: User = {
-      ...user,
-      ...input,
-    };
+    async createUser(
+        ctx: RequestContext,
+        input: CreateUserInput,
+    ): Promise<UserOutput> {
+        this.logger.log(ctx, `${this.createUser.name} was called`);
 
-    this.logger.log(ctx, `calling ${UserRepository.name}.save`);
-    await this.repository.save(updatedUser);
+        const user = plainToClass(User, input);
 
-    return plainToInstance(UserOutput, updatedUser, {
-      excludeExtraneousValues: true,
-    });
-  }
+        user.password = await hash(input.password, 10);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.saveUser`);
+        await this.repository.save(user);
+
+        return plainToClass(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+    }
+
+    async validateEmailPassword(
+        ctx: RequestContext,
+        email: string,
+        pass: string,
+    ): Promise<UserOutput> {
+        this.logger.log(ctx, `${this.validateEmailPassword.name} was called`);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
+        const user = await this.repository.findOne({ where: { email } });
+        if (!user) throw new UnauthorizedException();
+
+        const match = await compare(pass, user.password);
+        if (!match) throw new UnauthorizedException();
+
+        return plainToClass(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+    }
+
+    async getUsers(
+        ctx: RequestContext,
+        limit: number,
+        offset: number,
+    ): Promise<{ users: UserOutput[]; count: number }> {
+        this.logger.log(ctx, `${this.getUsers.name} was called`);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.findAndCount`);
+        const [users, count] = await this.repository.findAndCount({
+            where: {},
+            take: limit,
+            skip: offset,
+        });
+
+        const usersOutput = plainToInstance(UserOutput, users, {
+            excludeExtraneousValues: true,
+        });
+
+        return { users: usersOutput, count };
+    }
+
+    async findById(ctx: RequestContext, id: number): Promise<UserOutput> {
+        this.logger.log(ctx, `${this.findById.name} was called`);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
+        const user = await this.repository.findOne({ where: { id } });
+
+        return plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+    }
+
+    async getUserById(ctx: RequestContext, id: number): Promise<UserOutput> {
+        this.logger.log(ctx, `${this.getUserById.name} was called`);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
+        const user = await this.repository.getById(id);
+
+        return plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+    }
+
+    async findByEmail(ctx: RequestContext, email: string): Promise<UserOutput> {
+        this.logger.log(ctx, `${this.findByEmail.name} was called`);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
+        const user = await this.repository.findOne({ where: { email } });
+
+        return plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+    }
+
+    async updateUser(
+        ctx: RequestContext,
+        userId: number,
+        input: UpdateUserInput,
+    ): Promise<UserOutput> {
+        this.logger.log(ctx, `${this.updateUser.name} was called`);
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
+        const user = await this.repository.getById(userId);
+
+        // Hash the password if it exists in the input payload.
+        if (input.password) {
+            input.password = await hash(input.password, 10);
+        }
+
+        // merges the input (2nd line) to the found user (1st line)
+        const updatedUser: User = {
+            ...user,
+            ...input,
+        };
+
+        this.logger.log(ctx, `calling ${UserRepository.name}.save`);
+        await this.repository.save(updatedUser);
+
+        return plainToInstance(UserOutput, updatedUser, {
+            excludeExtraneousValues: true,
+        });
+    }
 }

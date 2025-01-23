@@ -1,6 +1,6 @@
 export enum ESchoolRole {
-  STUDENT = 'STUDENT',
-  TEACHER = 'TEACHER',
-  FACULTY = 'FACULTY',
-  ADMIN = 'ADMIN',
+    STUDENT = 'STUDENT',
+    TEACHER = 'TEACHER',
+    FACULTY = 'FACULTY',
+    ADMIN = 'ADMIN',
 }

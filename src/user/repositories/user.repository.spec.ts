@@ -7,83 +7,83 @@ import { User } from '../entities/user.entity';
 import { UserRepository } from './user.repository';
 
 describe('UserRepository', () => {
-  let repository: UserRepository;
+    let repository: UserRepository;
 
-  let dataSource: {
-    createEntityManager: jest.Mock;
-  };
-
-  beforeEach(async () => {
-    dataSource = {
-      createEntityManager: jest.fn(),
+    let dataSource: {
+        createEntityManager: jest.Mock;
     };
 
-    const moduleRef: TestingModule = await Test.createTestingModule({
-      providers: [
-        UserRepository,
-        {
-          provide: DataSource,
-          useValue: dataSource,
-        },
-      ],
-    }).compile();
+    beforeEach(async () => {
+        dataSource = {
+            createEntityManager: jest.fn(),
+        };
 
-    repository = moduleRef.get<UserRepository>(UserRepository);
-  });
+        const moduleRef: TestingModule = await Test.createTestingModule({
+            providers: [
+                UserRepository,
+                {
+                    provide: DataSource,
+                    useValue: dataSource,
+                },
+            ],
+        }).compile();
 
-  it('should be defined', () => {
-    expect(repository).toBeDefined();
-  });
-
-  describe('Get user by id', () => {
-    const currentDate = new Date();
-    it('should call findOne with correct id', () => {
-      const id = 1;
-
-      const expectedOutput: User = {
-        id,
-        name: 'Default User',
-        username: 'default-user',
-        password: 'random-password',
-        role: [ERole.USER],
-        isDisabled: false,
-        email: 'default-user@random.com',
-        createdAt: currentDate,
-        updatedAt: currentDate,
-        articles: [],
-      };
-
-      jest.spyOn(repository, 'findOne').mockResolvedValue(expectedOutput);
-      repository.getById(id);
-      expect(repository.findOne).toHaveBeenCalledWith({ where: { id } });
+        repository = moduleRef.get<UserRepository>(UserRepository);
     });
 
-    it('should return user if found', async () => {
-      const expectedOutput: User = {
-        id: 1,
-        name: 'Default User',
-        username: 'default-user',
-        password: 'random-password',
-        role: [ERole.USER],
-        isDisabled: false,
-        email: 'default-user@random.com',
-        createdAt: currentDate,
-        updatedAt: currentDate,
-        articles: [],
-      };
-
-      jest.spyOn(repository, 'findOne').mockResolvedValue(expectedOutput);
-
-      expect(await repository.getById(1)).toEqual(expectedOutput);
+    it('should be defined', () => {
+        expect(repository).toBeDefined();
     });
 
-    it('should throw NotFoundError when user not found', async () => {
-      jest.spyOn(repository, 'findOne').mockResolvedValue(null);
-      try {
-        await repository.getById(1);
-      } catch (error: any) {
-        expect(error.constructor).toBe(NotFoundException);
-      }
+    describe('Get user by id', () => {
+        const currentDate = new Date();
+        it('should call findOne with correct id', () => {
+            const id = 1;
+
+            const expectedOutput: User = {
+                id,
+                name: 'Default User',
+                username: 'default-user',
+                password: 'random-password',
+                role: [ERole.USER],
+                isDisabled: false,
+                email: 'default-user@random.com',
+                createdAt: currentDate,
+                updatedAt: currentDate,
+                articles: [],
+            };
+
+            jest.spyOn(repository, 'findOne').mockResolvedValue(expectedOutput);
+            repository.getById(id);
+            expect(repository.findOne).toHaveBeenCalledWith({ where: { id } });
+        });
+
+        it('should return user if found', async () => {
+            const expectedOutput: User = {
+                id: 1,
+                name: 'Default User',
+                username: 'default-user',
+                password: 'random-password',
+                role: [ERole.USER],
+                isDisabled: false,
+                email: 'default-user@random.com',
+                createdAt: currentDate,
+                updatedAt: currentDate,
+                articles: [],
+            };
+
+            jest.spyOn(repository, 'findOne').mockResolvedValue(expectedOutput);
+
+            expect(await repository.getById(1)).toEqual(expectedOutput);
+        });
+
+        it('should throw NotFoundError when user not found', async () => {
+            jest.spyOn(repository, 'findOne').mockResolvedValue(null);
+            try {
+                await repository.getById(1);
+            } catch (error: any) {
+                expect(error.constructor).toBe(NotFoundException);
+            }
+        });
     });
-  });
 });

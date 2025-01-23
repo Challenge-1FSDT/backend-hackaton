@@ -11,14 +11,14 @@ import { ArticleService } from './services/article.service';
 import { ArticleAclService } from './services/article-acl.service';
 
 @Module({
-  imports: [SharedModule, TypeOrmModule.forFeature([Article]), UserModule],
-  providers: [
-    ArticleService,
-    JwtAuthStrategy,
-    ArticleAclService,
-    ArticleRepository,
-  ],
-  controllers: [ArticleController],
-  exports: [ArticleService],
+    imports: [SharedModule, TypeOrmModule.forFeature([Article]), UserModule],
+    providers: [
+        ArticleService,
+        JwtAuthStrategy,
+        ArticleAclService,
+        ArticleRepository,
+    ],
+    controllers: [ArticleController],
+    exports: [ArticleService],
 })
 export class ArticleModule {}

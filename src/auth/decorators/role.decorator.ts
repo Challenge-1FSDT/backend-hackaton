@@ -4,4 +4,4 @@ import { ERole } from '../constants/role.constant';
 
 export const ROLES_KEY = 'roles';
 export const Roles = (...roles: ERole[]): CustomDecorator<string> =>
-  SetMetadata(ROLES_KEY, roles);
+    SetMetadata(ROLES_KEY, roles);

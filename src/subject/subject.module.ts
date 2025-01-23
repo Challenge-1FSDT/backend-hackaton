@@ -5,9 +5,9 @@ import { SharedModule } from '../shared/shared.module';
 import { Subject } from './entities/subject.entity';
 
 @Module({
-  imports: [SharedModule, TypeOrmModule.forFeature([Subject])],
-  providers: [],
-  controllers: [],
-  exports: [],
+    imports: [SharedModule, TypeOrmModule.forFeature([Subject])],
+    providers: [],
+    controllers: [],
+    exports: [],
 })
 export class SubjectModule {}
