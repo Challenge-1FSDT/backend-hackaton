@@ -51,7 +51,7 @@ export class AttendanceService {
     public async getAttendance(
         ctx: AuthenticatedRequestContext,
         lectureId: number,
-        attendanceId: number,
+        studentId: number,
     ): Promise<Attendance> {
         this.logger.log(ctx, `${this.getAttendance.name} was called`);
 
@@ -60,7 +60,7 @@ export class AttendanceService {
             where: {
                 school: { id: ctx.schoolId! },
                 lecture: { id: lectureId },
-                id: attendanceId,
+                student: { id: studentId },
             },
         });
         if (!attendance) {

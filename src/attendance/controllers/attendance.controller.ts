@@ -91,9 +91,9 @@ export class AttendanceController {
     }
 
     @UseInterceptors(ClassSerializerInterceptor)
-    @Get(':attendanceId')
+    @Get(':studentId')
     @ApiOperation({
-        summary: 'Get an attendance for a lecture',
+        summary: "Get a student's attendance for a lecture",
     })
     @ApiResponse({
         status: HttpStatus.OK,
@@ -118,14 +118,14 @@ export class AttendanceController {
     public async getAttendance(
         @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('lectureId', ParseIntPipe) lectureId: number,
-        @Param('attendanceId', ParseIntPipe) attendanceId: number,
+        @Param('studentId', ParseIntPipe) studentId: number,
     ): Promise<BaseApiResponse<AttendanceOutput>> {
         this.logger.log(ctx, `${this.getAttendance.name} was called`);
 
         const attendance = await this.attendanceService.getAttendance(
             ctx,
             lectureId,
-            attendanceId,
+            studentId,
         );
 
         const attendanceOutput = plainToInstance(AttendanceOutput, attendance, {
