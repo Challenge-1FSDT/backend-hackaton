@@ -24,13 +24,15 @@ export class Attendance {
     endAt?: Date;
 
     // * Relations
-    @ManyToOne(() => School)
+    @ManyToOne(() => School, { nullable: false })
     school: School;
 
-    @ManyToOne(() => Lecture, (lecture) => lecture.attendances)
-    lecture: Promise<Lecture>;
+    @ManyToOne(() => Lecture, (lecture) => lecture.attendances, {
+        nullable: false,
+    })
+    lecture: Lecture;
 
-    @ManyToOne(() => SchoolMember)
+    @ManyToOne(() => SchoolMember, { nullable: false })
     student: SchoolMember;
 
     // * Timestamps

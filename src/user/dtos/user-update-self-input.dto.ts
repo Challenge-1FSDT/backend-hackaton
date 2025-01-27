@@ -9,9 +9,7 @@ import {
     MaxLength,
 } from 'class-validator';
 
-import { IsCPF } from '../../shared/validators/isCPF';
-
-export class UpdateUserInput {
+export class UpdateUserSelfInput {
     @ApiPropertyOptional()
     @IsOptional()
     @IsNotEmpty()
@@ -31,12 +29,6 @@ export class UpdateUserInput {
     @IsEmail()
     @MaxLength(200)
     email?: string;
-
-    @ApiPropertyOptional()
-    @IsOptional()
-    @IsNotEmpty()
-    @IsCPF()
-    taxId?: string;
 
     @ApiPropertyOptional()
     @IsOptional()

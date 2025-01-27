@@ -5,7 +5,7 @@ import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../dtos/user-output.dto';
-import { UpdateUserInput } from '../dtos/user-update-input.dto';
+import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
 import { UserService } from '../services/user.service';
 import { UserController } from './user.controller';
 
@@ -80,7 +80,7 @@ describe('UserController', () => {
 
     describe('Update user by id', () => {
         it('Update user by id and returns user', async () => {
-            const input = new UpdateUserInput();
+            const input = new UpdateUserSelfInput();
             mockedUserService.updateUser.mockResolvedValue(expectedOutput);
 
             expect(await controller.updateUser(ctx, 1, input)).toEqual({

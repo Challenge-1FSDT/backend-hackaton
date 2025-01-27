@@ -7,6 +7,7 @@ import { RequestContext } from '../../shared/request-context/request-context.dto
 import { CreateUserInput } from '../dtos/user-create-input.dto';
 import { UserOutput } from '../dtos/user-output.dto';
 import { UpdateUserInput } from '../dtos/user-update-input.dto';
+import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../repositories/user.repository';
 
@@ -113,8 +114,8 @@ export class UserService {
     async updateUser(
         ctx: RequestContext,
         userId: number,
-        input: UpdateUserInput,
-    ): Promise<UserOutput> {
+        input: UpdateUserInput | UpdateUserSelfInput,
+    ): Promise<User> {
         this.logger.log(ctx, `${this.updateUser.name} was called`);
 
         this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
@@ -128,14 +129,12 @@ export class UserService {
         // merges the input (2nd line) to the found user (1st line)
         const updatedUser: User = {
             ...user,
-            ...input,
+            ...JSON.parse(JSON.stringify(input)), // remove undefineds
         };
 
         this.logger.log(ctx, `calling ${UserRepository.name}.save`);
-        await this.repository.save(updatedUser);
+        const result = await this.repository.save(updatedUser);
 
-        return plainToInstance(UserOutput, updatedUser, {
-            excludeExtraneousValues: true,
-        });
+        return result;
     }
 }

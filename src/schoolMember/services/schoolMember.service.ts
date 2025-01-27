@@ -23,6 +23,7 @@ export class SchoolMemberService {
 
         const member = await this.repository.findOne({
             where: { user: { id: userId }, school: { id: schoolId } },
+            relations: ['user', 'school'],
         });
 
         return member;

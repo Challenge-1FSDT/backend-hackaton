@@ -27,15 +27,15 @@ export class Subject {
     description?: string;
 
     // * Relations
-    @ManyToOne(() => School, (school) => school.classrooms)
+    @ManyToOne(() => School, (school) => school.classrooms, { nullable: false })
     school: School;
 
     @ManyToMany(() => SchoolMember, (schoolMember) => schoolMember.subjects)
     @JoinTable({ name: 'subject_teachers' })
-    teachers: SchoolMember[];
+    teachers: Promise<SchoolMember[]>;
 
     @OneToMany(() => Lecture, (lecture) => lecture.subject)
-    lectures: Lecture[];
+    lectures: Promise<Lecture[]>;
 
     // * Timestamps
     @CreateDateColumn({ name: 'createdAt' })

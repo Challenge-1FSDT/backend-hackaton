@@ -10,7 +10,7 @@ export function IsCPF(validationOptions?: ValidationOptions) {
             name: 'isCPF',
             target: object.constructor,
             propertyName,
-            options: validationOptions,
+            options: { message: 'CPF is invalid', ...validationOptions },
             validator: {
                 validate(value: any): Promise<boolean> | boolean {
                     if (

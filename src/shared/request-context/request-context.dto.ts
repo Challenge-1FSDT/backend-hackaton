@@ -9,4 +9,10 @@ export class RequestContext {
 
     // TODO : Discuss with team if this import is acceptable or if we should move UserAccessTokenClaims to shared.
     public user: UserAccessTokenClaims | null;
+
+    public schoolId: number | null;
+}
+
+export class AuthenticatedRequestContext extends RequestContext {
+    declare public user: UserAccessTokenClaims;
 }

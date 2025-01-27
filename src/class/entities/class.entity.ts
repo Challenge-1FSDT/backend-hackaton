@@ -30,7 +30,7 @@ export class Class {
     endAt: Date;
 
     // * Relations
-    @ManyToOne(() => School, (school) => school.classrooms)
+    @ManyToOne(() => School, (school) => school.classrooms, { nullable: false })
     school: School;
 
     @ManyToMany(() => SchoolMember, (schoolMember) => schoolMember.classes)

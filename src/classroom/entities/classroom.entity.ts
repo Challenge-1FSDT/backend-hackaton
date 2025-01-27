@@ -26,7 +26,7 @@ export class Classroom {
     locationRadius?: number;
 
     // * Relations
-    @ManyToOne(() => School)
+    @ManyToOne(() => School, { nullable: false })
     school: School;
 
     // * Timestamps

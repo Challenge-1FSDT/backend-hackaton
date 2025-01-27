@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-
-import { JwtAuthStrategy } from '../auth/strategies/jwt-auth.strategy';
 import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
 import { SharedModule } from '../shared/shared.module';
 import { SchoolController } from './controllers/school.controller';
@@ -16,12 +14,7 @@ import { SchoolAclService } from './services/school-acl.service';
         TypeOrmModule.forFeature([School]),
         SchoolMemberModule,
     ],
-    providers: [
-        SchoolService,
-        SchoolAclService,
-        JwtAuthStrategy,
-        SchoolRepository,
-    ],
+    providers: [SchoolService, SchoolAclService, SchoolRepository],
     controllers: [SchoolController],
     exports: [SchoolService, SchoolAclService],
 })

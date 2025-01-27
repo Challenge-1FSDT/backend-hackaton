@@ -30,13 +30,17 @@ export class Lecture {
     endAt: Date;
 
     // * Relations
-    @ManyToOne(() => School, (school) => school.classrooms)
+    @ManyToOne(() => School, (school) => school.classrooms, { nullable: false })
     school: School;
 
-    @ManyToOne(() => Subject, (subject) => subject.lectures)
+    @ManyToOne(() => Subject, (subject) => subject.lectures, {
+        nullable: false,
+    })
     subject: Subject;
 
-    @ManyToOne(() => Class, (schoolClass) => schoolClass.lectures)
+    @ManyToOne(() => Class, (schoolClass) => schoolClass.lectures, {
+        nullable: false,
+    })
     class: Class;
 
     @ManyToOne(() => Classroom, { nullable: true })

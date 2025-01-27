@@ -16,6 +16,7 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 
 import { ERole } from '../../auth/constants/role.constant';
 import { Roles } from '../../auth/decorators/role.decorator';
@@ -32,6 +33,7 @@ import { ReqContext } from '../../shared/request-context/req-context.decorator';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../dtos/user-output.dto';
 import { UpdateUserInput } from '../dtos/user-update-input.dto';
+import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
 import { UserService } from '../services/user.service';
 
 @ApiTags('users')
@@ -85,7 +87,7 @@ export class UserController {
     })
     async updateMyProfile(
         @ReqContext() ctx: RequestContext,
-        @Body() input: UpdateUserInput,
+        @Body() input: UpdateUserSelfInput,
     ): Promise<BaseApiResponse<UserOutput>> {
         this.logger.log(ctx, `${this.updateMyProfile.name} was called`);
 
@@ -94,7 +96,12 @@ export class UserController {
             ctx.user!.id,
             input,
         );
-        return { data: user, meta: {} };
+
+        const userOutput = plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: userOutput, meta: {} };
     }
 
     @UseInterceptors(ClassSerializerInterceptor)
@@ -176,6 +183,11 @@ export class UserController {
         this.logger.log(ctx, `${this.updateUser.name} was called`);
 
         const user = await this.userService.updateUser(ctx, userId, input);
-        return { data: user, meta: {} };
+
+        const userOutput = plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: userOutput, meta: {} };
     }
 }

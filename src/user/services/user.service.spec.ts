@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { ERole } from '../../auth/constants/role.constant';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UpdateUserInput } from '../dtos/user-update-input.dto';
+import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
 import { User } from '../entities/user.entity';
 import { UserRepository } from '../repositories/user.repository';
 import { UserService } from './user.service';
@@ -291,7 +291,7 @@ describe('UserService', () => {
     describe('updateUser', () => {
         it('should call repository.save with correct input', async () => {
             const userId = 1;
-            const input: UpdateUserInput = {
+            const input: UpdateUserSelfInput = {
                 name: 'Test',
                 password: 'updated-password',
             };
@@ -336,7 +336,7 @@ describe('UserService', () => {
 
         it('should throw not found exception if user not found', async () => {
             const userId = 1;
-            const input: UpdateUserInput = {
+            const input: UpdateUserSelfInput = {
                 name: 'Test',
                 password: 'updated-password',
             };

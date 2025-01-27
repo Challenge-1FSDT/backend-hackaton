@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 
+import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
 import { SharedModule } from '../shared/shared.module';
 import { UserModule } from '../user/user.module';
 import { STRATEGY_JWT_AUTH } from './constants/strategy.constant';
@@ -15,7 +16,10 @@ import { LocalStrategy } from './strategies/local.strategy';
 @Module({
     imports: [
         SharedModule,
-        PassportModule.register({ defaultStrategy: STRATEGY_JWT_AUTH }),
+        PassportModule.register({
+            defaultStrategy: STRATEGY_JWT_AUTH,
+            property: 'user',
+        }),
         JwtModule.registerAsync({
             imports: [SharedModule],
             useFactory: async (configService: ConfigService) => ({
@@ -28,6 +32,7 @@ import { LocalStrategy } from './strategies/local.strategy';
             inject: [ConfigService],
         }),
         UserModule,
+        SchoolMemberModule,
     ],
     controllers: [AuthController],
     providers: [
@@ -36,5 +41,6 @@ import { LocalStrategy } from './strategies/local.strategy';
         JwtAuthStrategy,
         JwtRefreshStrategy,
     ],
+    exports: [AuthService, JwtAuthStrategy],
 })
 export class AuthModule {}

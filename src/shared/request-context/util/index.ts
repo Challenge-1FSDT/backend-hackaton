@@ -6,6 +6,7 @@ import {
     FORWARDED_FOR_TOKEN_HEADER,
     REQUEST_ID_TOKEN_HEADER,
 } from '../../constants';
+import { isValidNumber } from '../../typeguards';
 import { RequestContext } from '../request-context.dto';
 
 // Creates a RequestContext object from Request
@@ -23,6 +24,8 @@ export function createRequestContext(request: Request): RequestContext {
               excludeExtraneousValues: true,
           })
         : null;
+    const schoolId = Number(request.params.schoolId || request.query.schoolId);
+    ctx.schoolId = isValidNumber(schoolId) ? schoolId : null;
 
     return ctx;
 }

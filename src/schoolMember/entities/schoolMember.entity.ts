@@ -27,10 +27,10 @@ export class SchoolMember {
     role: ESchoolRole;
 
     // * Relations
-    @ManyToOne(() => School, (school) => school.members)
+    @ManyToOne(() => School, (school) => school.members, { nullable: false })
     school: School;
 
-    @ManyToOne(() => User, (user) => user.memberships)
+    @ManyToOne(() => User, (user) => user.memberships, { nullable: false })
     user: User;
 
     @ManyToMany(() => Class, (schoolClass) => schoolClass.students)
