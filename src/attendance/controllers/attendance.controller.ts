@@ -16,6 +16,7 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
@@ -26,13 +27,12 @@ import {
     BaseApiResponse,
     SwaggerBaseApiResponse,
 } from '../../shared/dtos/base-api-response.dto';
+import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
 import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
-import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
-import { plainToInstance } from 'class-transformer';
-import { AttendanceService } from '../services/attendance.service';
 import { AttendanceOutput } from '../dtos/attendance-output.dto';
+import { AttendanceService } from '../services/attendance.service';
 
 @ApiTags('lectures', 'attendances')
 @Controller('lectures/:lectureId/attendances')

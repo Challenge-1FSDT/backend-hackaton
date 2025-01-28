@@ -28,7 +28,7 @@ import {
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import {
     CreateArticleInput,
     UpdateArticleInput,
@@ -58,7 +58,7 @@ export class ArticleController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     async createArticle(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Body() input: CreateArticleInput,
     ): Promise<BaseApiResponse<ArticleOutput>> {
         const article = await this.articleService.createArticle(ctx, input);
@@ -77,7 +77,7 @@ export class ArticleController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     async getArticles(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Query() query: PaginationParamsDto,
     ): Promise<BaseApiResponse<ArticleOutput[]>> {
         this.logger.log(ctx, `${this.getArticles.name} was called`);
@@ -107,7 +107,7 @@ export class ArticleController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     async getArticle(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') id: number,
     ): Promise<BaseApiResponse<ArticleOutput>> {
         this.logger.log(ctx, `${this.getArticle.name} was called`);
@@ -128,7 +128,7 @@ export class ArticleController {
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     async updateArticle(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') articleId: number,
         @Body() input: UpdateArticleInput,
     ): Promise<BaseApiResponse<ArticleOutput>> {
@@ -151,7 +151,7 @@ export class ArticleController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     async deleteArticle(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') id: number,
     ): Promise<void> {
         this.logger.log(ctx, `${this.deleteArticle.name} was called`);

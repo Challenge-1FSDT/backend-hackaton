@@ -3,18 +3,19 @@ import { Transform } from 'class-transformer';
 import {
     IsDateString,
     IsEmail,
+    IsEnum,
     IsNotEmpty,
     IsOptional,
     IsPhoneNumber,
     IsString,
-    Length,
     MaxLength,
 } from 'class-validator';
 import { DateTime } from 'luxon';
 
 import { IsCPF } from '../../shared/validators/isCPF';
+import { ESchoolRole } from '../constants/schoolRole.constant';
 
-export class RegisterInput {
+export class CreateSchoolMemberInput {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
@@ -23,7 +24,6 @@ export class RegisterInput {
 
     @ApiPropertyOptional()
     @IsOptional()
-    @IsNotEmpty()
     @IsString()
     @MaxLength(200)
     lastName?: string;
@@ -59,9 +59,16 @@ export class RegisterInput {
     })
     dateOfBirth: DateTime;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
+    @IsOptional()
     @IsNotEmpty()
     @IsString()
-    @Length(6, 100)
-    password: string;
+    @MaxLength(100)
+    registration?: string;
+
+    @ApiPropertyOptional()
+    @IsOptional()
+    @IsNotEmpty()
+    @IsEnum(ESchoolRole)
+    role?: ESchoolRole;
 }

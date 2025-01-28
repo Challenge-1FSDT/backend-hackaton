@@ -1,3 +1,4 @@
+import { AuthenticatedRequestContext } from '../request-context/request-context.dto';
 import { Action } from './action.constant';
 import { Actor } from './actor.constant';
 
@@ -7,6 +8,7 @@ import { Actor } from './actor.constant';
 export type RuleCallback<Resource> = (
     resource: Resource,
     actor: Actor,
+    ctx?: AuthenticatedRequestContext,
 ) => Promise<boolean> | boolean;
 
 /**
@@ -20,5 +22,5 @@ export type AclRule<RoleEnum, Resource> = {
     actions: Action[];
 
     //specific rule there or otherwise true
-    ruleCallback?: RuleCallback<Resource>;
+    ruleCallback?: RuleCallback<Resource>[];
 };

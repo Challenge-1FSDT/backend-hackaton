@@ -4,7 +4,10 @@ import { JwtService } from '@nestjs/jwt';
 import { plainToClass } from 'class-transformer';
 
 import { AppLogger } from '../../shared/logger/logger.service';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
+import {
+    AuthenticatedRequestContext,
+    RequestContext,
+} from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
 import { ERole } from '../constants/role.constant';
@@ -50,7 +53,7 @@ export class AuthService {
         return user;
     }
 
-    login(ctx: RequestContext): AuthTokenOutput {
+    login(ctx: AuthenticatedRequestContext): AuthTokenOutput {
         this.logger.log(ctx, `${this.login.name} was called`);
 
         return this.getAuthToken(ctx, ctx.user!);
@@ -71,7 +74,9 @@ export class AuthService {
         });
     }
 
-    async refreshToken(ctx: RequestContext): Promise<AuthTokenOutput> {
+    async refreshToken(
+        ctx: AuthenticatedRequestContext,
+    ): Promise<AuthTokenOutput> {
         this.logger.log(ctx, `${this.refreshToken.name} was called`);
 
         const user = await this.userService.findById(ctx, ctx.user!.id);

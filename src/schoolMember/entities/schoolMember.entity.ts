@@ -26,12 +26,15 @@ export class SchoolMember {
     })
     role: ESchoolRole;
 
+    @Column({ nullable: true, length: 100 })
+    registration?: string;
+
     // * Relations
     @ManyToOne(() => School, (school) => school.members, { nullable: false })
     school: School;
 
-    @ManyToOne(() => User, (user) => user.memberships, { nullable: false })
-    user: User;
+    @ManyToOne(() => User, (user) => user.memberships, { nullable: true })
+    user?: User;
 
     @ManyToMany(() => Class, (schoolClass) => schoolClass.students)
     classes: Promise<Class[]>;

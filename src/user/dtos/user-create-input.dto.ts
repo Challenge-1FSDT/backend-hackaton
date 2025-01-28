@@ -1,14 +1,22 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import {
+    ApiHideProperty,
+    ApiProperty,
+    ApiPropertyOptional,
+} from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
+import {
+    IsDateString,
     IsEmail,
     IsEnum,
     IsNotEmpty,
     IsOptional,
     IsPhoneNumber,
     IsString,
+    IsStrongPassword,
     Length,
     MaxLength,
 } from 'class-validator';
+import { DateTime } from 'luxon';
 
 import { ERole } from '../../auth/constants/role.constant';
 import { IsCPF } from '../../shared/validators/isCPF';
@@ -46,11 +54,27 @@ export class CreateUserInput {
     @MaxLength(11)
     taxId?: string;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsNotEmpty()
-    @IsString()
-    @Length(6, 100)
-    password: string;
+    @IsDateString()
+    @Transform(({ value }) => DateTime.fromISO(value), {
+        toClassOnly: true,
+    })
+    @Transform(({ value }) => value.toISO(), {
+        toClassOnly: true,
+    })
+    dateOfBirth: DateTime;
+
+    @ApiHideProperty()
+    @IsOptional()
+    @IsNotEmpty()
+    @IsStrongPassword({
+        minLength: 8,
+        minNumbers: 1,
+        minSymbols: 1,
+    })
+    @Length(8, 100)
+    password?: string;
 
     @ApiPropertyOptional()
     @IsOptional()

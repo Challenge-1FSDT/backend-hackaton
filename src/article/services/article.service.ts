@@ -4,7 +4,7 @@ import { plainToClass } from 'class-transformer';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
 import { AppLogger } from '../../shared/logger/logger.service';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
 import {
@@ -28,7 +28,7 @@ export class ArticleService {
     }
 
     async createArticle(
-        ctx: RequestContext,
+        ctx: AuthenticatedRequestContext,
         input: CreateArticleInput,
     ): Promise<ArticleOutput> {
         this.logger.log(ctx, `${this.createArticle.name} was called`);
@@ -57,7 +57,7 @@ export class ArticleService {
     }
 
     async getArticles(
-        ctx: RequestContext,
+        ctx: AuthenticatedRequestContext,
         limit: number,
         offset: number,
     ): Promise<{ articles: ArticleOutput[]; count: number }> {
@@ -87,7 +87,7 @@ export class ArticleService {
     }
 
     async getArticleById(
-        ctx: RequestContext,
+        ctx: AuthenticatedRequestContext,
         id: number,
     ): Promise<ArticleOutput> {
         this.logger.log(ctx, `${this.getArticleById.name} was called`);
@@ -110,7 +110,7 @@ export class ArticleService {
     }
 
     async updateArticle(
-        ctx: RequestContext,
+        ctx: AuthenticatedRequestContext,
         articleId: number,
         input: UpdateArticleInput,
     ): Promise<ArticleOutput> {
@@ -141,7 +141,10 @@ export class ArticleService {
         });
     }
 
-    async deleteArticle(ctx: RequestContext, id: number): Promise<void> {
+    async deleteArticle(
+        ctx: AuthenticatedRequestContext,
+        id: number,
+    ): Promise<void> {
         this.logger.log(ctx, `${this.deleteArticle.name} was called`);
 
         this.logger.log(ctx, `calling ${ArticleRepository.name}.getById`);

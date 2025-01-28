@@ -1,13 +1,19 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { SharedModule } from '../shared/shared.module';
+import { UserModule } from '../user/user.module';
 import { SchoolMember } from './entities/schoolMember.entity';
 import { SchoolMemberRepository } from './repositories/schoolMember.repository';
 import { SchoolMemberService } from './services/schoolMember.service';
 import { SchoolMemberAclService } from './services/schoolMember-acl.service';
 
 @Module({
-    imports: [SharedModule, TypeOrmModule.forFeature([SchoolMember])],
+    imports: [
+        SharedModule,
+        TypeOrmModule.forFeature([SchoolMember]),
+        forwardRef(() => UserModule),
+    ],
     providers: [
         SchoolMemberService,
         SchoolMemberAclService,

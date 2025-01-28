@@ -18,14 +18,14 @@ export class User {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({ length: 200 })
+    @Column({ length: 200, nullable: false })
     firstName: string;
 
     @Column({ length: 200, nullable: true })
     lastName?: string;
 
     @Unique('email', ['email'])
-    @Column({ length: 200 })
+    @Column({ length: 200, nullable: false })
     email: string;
 
     @Column({ length: 200, nullable: true })
@@ -34,12 +34,16 @@ export class User {
     @Column({ length: 11, nullable: true })
     taxId?: string;
 
-    @Column()
+    @Column({ nullable: false })
     password: string;
+
+    @Column({ nullable: false })
+    dateOfBirth: Date;
 
     @Column({
         enum: ERole,
         default: ERole.USER,
+        nullable: false,
     })
     role: ERole;
 

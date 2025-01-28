@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UserOutput } from '../../user/dtos/user-output.dto';
+import { User } from '../../user/dtos/user-output.dto';
 import { UserService } from '../../user/services/user.service';
 import { ERole } from '../constants/role.constant';
 import {
@@ -34,7 +34,7 @@ describe('AuthService', () => {
 
     const currentDate = new Date().toString();
 
-    const userOutput: UserOutput = {
+    const userOutput: User = {
         name: 'John doe',
         isDisabled: false,
         email: 'randomUser@random.com',

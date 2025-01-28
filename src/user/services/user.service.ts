@@ -5,7 +5,6 @@ import { plainToClass, plainToInstance } from 'class-transformer';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { CreateUserInput } from '../dtos/user-create-input.dto';
-import { UserOutput } from '../dtos/user-output.dto';
 import { UpdateUserInput } from '../dtos/user-update-input.dto';
 import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
 import { User } from '../entities/user.entity';
@@ -23,26 +22,27 @@ export class UserService {
     async createUser(
         ctx: RequestContext,
         input: CreateUserInput,
-    ): Promise<UserOutput> {
+    ): Promise<User> {
         this.logger.log(ctx, `${this.createUser.name} was called`);
 
         const user = plainToClass(User, input);
 
-        user.password = await hash(input.password, 10);
+        user.password = await hash(
+            input.password ?? input.dateOfBirth.toFormat('ddMMyyyy'),
+            10,
+        );
 
         this.logger.log(ctx, `calling ${UserRepository.name}.saveUser`);
-        await this.repository.save(user);
+        const createdUser = await this.repository.save(user);
 
-        return plainToClass(UserOutput, user, {
-            excludeExtraneousValues: true,
-        });
+        return createdUser;
     }
 
     async validateEmailPassword(
         ctx: RequestContext,
         email: string,
         pass: string,
-    ): Promise<UserOutput> {
+    ): Promise<User> {
         this.logger.log(ctx, `${this.validateEmailPassword.name} was called`);
 
         this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
@@ -52,7 +52,7 @@ export class UserService {
         const match = await compare(pass, user.password);
         if (!match) throw new UnauthorizedException();
 
-        return plainToClass(UserOutput, user, {
+        return plainToClass(User, user, {
             excludeExtraneousValues: true,
         });
     }
@@ -61,7 +61,7 @@ export class UserService {
         ctx: RequestContext,
         limit: number,
         offset: number,
-    ): Promise<{ users: UserOutput[]; count: number }> {
+    ): Promise<{ users: User[]; count: number }> {
         this.logger.log(ctx, `${this.getUsers.name} was called`);
 
         this.logger.log(ctx, `calling ${UserRepository.name}.findAndCount`);
@@ -71,44 +71,41 @@ export class UserService {
             skip: offset,
         });
 
-        const usersOutput = plainToInstance(UserOutput, users, {
+        const usersOutput = plainToInstance(User, users, {
             excludeExtraneousValues: true,
         });
 
         return { users: usersOutput, count };
     }
 
-    async findById(ctx: RequestContext, id: number): Promise<UserOutput> {
+    async findById(ctx: RequestContext, id: number): Promise<User | null> {
         this.logger.log(ctx, `${this.findById.name} was called`);
 
         this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
         const user = await this.repository.findOne({ where: { id } });
 
-        return plainToInstance(UserOutput, user, {
-            excludeExtraneousValues: true,
-        });
+        return user;
     }
 
-    async getUserById(ctx: RequestContext, id: number): Promise<UserOutput> {
+    async getUserById(ctx: RequestContext, id: number): Promise<User | null> {
         this.logger.log(ctx, `${this.getUserById.name} was called`);
 
         this.logger.log(ctx, `calling ${UserRepository.name}.getById`);
         const user = await this.repository.getById(id);
 
-        return plainToInstance(UserOutput, user, {
-            excludeExtraneousValues: true,
-        });
+        return user;
     }
 
-    async findByEmail(ctx: RequestContext, email: string): Promise<UserOutput> {
+    async findByEmail(
+        ctx: RequestContext,
+        email: string,
+    ): Promise<User | null> {
         this.logger.log(ctx, `${this.findByEmail.name} was called`);
 
         this.logger.log(ctx, `calling ${UserRepository.name}.findOne`);
         const user = await this.repository.findOne({ where: { email } });
 
-        return plainToInstance(UserOutput, user, {
-            excludeExtraneousValues: true,
-        });
+        return user;
     }
 
     async updateUser(

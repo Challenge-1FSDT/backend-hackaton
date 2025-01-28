@@ -4,7 +4,7 @@ import { ERole } from '../../auth/constants/role.constant';
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UserOutput } from '../dtos/user-output.dto';
+import { User } from '../dtos/user-output.dto';
 import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
 import { UserService } from '../services/user.service';
 import { UserController } from './user.controller';
@@ -54,7 +54,7 @@ describe('UserController', () => {
 
     const currentDate = new Date().toString();
 
-    const expectedOutput: UserOutput = {
+    const expectedOutput: User = {
         id: 1,
         username: 'default-user',
         name: 'default-name',

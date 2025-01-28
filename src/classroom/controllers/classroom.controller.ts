@@ -5,7 +5,7 @@ import { SchoolService } from '../../school/services/school.service';
 import { AppLogger } from '../../shared/logger/logger.service';
 
 @ApiTags('classrooms')
-@Controller('shcools/:schoolId/classrooms')
+@Controller('classrooms')
 export class ClassroomController {
     constructor(
         private readonly schoolService: SchoolService,
@@ -31,9 +31,8 @@ export class ClassroomController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @ApiBearerAuth()
     async getClassrooms(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Query() query: PaginationParamsDto,
-        @Param('schoolId') schoolId: string,
     ): Promise<BaseApiResponse<ClassroomOutput[]>> {
         this.logger.log(ctx, `${this.getClassrooms.name} was called`);
 

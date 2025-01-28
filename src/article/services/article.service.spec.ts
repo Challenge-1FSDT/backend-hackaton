@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ERole } from '../../auth/constants/role.constant';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
-import { UserOutput } from '../../user/dtos/user-output.dto';
 import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
 import {
@@ -86,7 +85,7 @@ describe('ArticleService', () => {
                 post: 'Hello, world!',
             };
 
-            const author = new UserOutput();
+            const author = new User();
             mockedUserService.getUserById.mockResolvedValue(author);
             const expected = {
                 title: 'Test',

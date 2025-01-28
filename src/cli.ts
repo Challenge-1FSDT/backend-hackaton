@@ -1,5 +1,6 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { DateTime } from 'luxon';
 
 import { AppModule } from './app.module';
 import { ERole } from './auth/constants/role.constant';
@@ -20,11 +21,12 @@ async function bootstrap() {
     const defaultAdmin: CreateUserInput = {
         firstName: 'Default Admin',
         password: defaultAdminUserPassword,
+        dateOfBirth: DateTime.now(),
         role: ERole.ADMIN,
         email: 'default@admin.com',
     };
 
-    const ctx = new RequestContext();
+    const ctx = {} as RequestContext;
 
     // Create the default admin user if it doesn't already exist.
     const user = await userService.findByEmail(ctx, defaultAdmin.email);

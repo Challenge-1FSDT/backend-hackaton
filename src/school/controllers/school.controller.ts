@@ -31,7 +31,7 @@ import {
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../../user/dtos/user-output.dto';
 import { CreateSchoolInput } from '../dtos/create-school-input.dto';
 import { SchoolOutput } from '../dtos/school-output.dto';
@@ -61,10 +61,10 @@ export class SchoolController {
         type: BaseApiErrorResponse,
     })
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(ERole.ADMIN)
+    @Roles(ERole.USER, ERole.ADMIN)
     @ApiBearerAuth()
     async getSchools(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Query() query: PaginationParamsDto,
     ): Promise<BaseApiResponse<SchoolOutput[]>> {
         this.logger.log(ctx, `${this.getSchools.name} was called`);
@@ -95,7 +95,7 @@ export class SchoolController {
     @Roles(ERole.USER, ERole.ADMIN)
     @ApiBearerAuth()
     async getSchool(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id', ParseIntPipe) id: number,
     ): Promise<BaseApiResponse<SchoolOutput>> {
         this.logger.log(ctx, `${this.getSchool.name} was called`);
@@ -125,7 +125,7 @@ export class SchoolController {
     @Roles(ERole.ADMIN)
     @ApiBearerAuth()
     async createSchools(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Body() body: CreateSchoolInput,
     ): Promise<BaseApiResponse<SchoolOutput>> {
         this.logger.log(ctx, `${this.getSchools.name} was called`);

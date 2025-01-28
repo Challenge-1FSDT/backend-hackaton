@@ -30,7 +30,7 @@ import {
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
-import { RequestContext } from '../../shared/request-context/request-context.dto';
+import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { UserOutput } from '../dtos/user-output.dto';
 import { UpdateUserInput } from '../dtos/user-update-input.dto';
 import { UpdateUserSelfInput } from '../dtos/user-update-self-input.dto';
@@ -62,12 +62,17 @@ export class UserController {
         type: BaseApiErrorResponse,
     })
     async getMyProfile(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
     ): Promise<BaseApiResponse<UserOutput>> {
         this.logger.log(ctx, `${this.getMyProfile.name} was called`);
 
         const user = await this.userService.findById(ctx, ctx.user!.id);
-        return { data: user, meta: {} };
+
+        const userOutput = plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: userOutput, meta: {} };
     }
 
     @UseGuards(JwtAuthGuard)
@@ -86,7 +91,7 @@ export class UserController {
         type: BaseApiErrorResponse,
     })
     async updateMyProfile(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Body() input: UpdateUserSelfInput,
     ): Promise<BaseApiResponse<UserOutput>> {
         this.logger.log(ctx, `${this.updateMyProfile.name} was called`);
@@ -121,7 +126,7 @@ export class UserController {
     @Roles(ERole.ADMIN)
     @ApiBearerAuth()
     async getUsers(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Query() query: PaginationParamsDto,
     ): Promise<BaseApiResponse<UserOutput[]>> {
         this.logger.log(ctx, `${this.getUsers.name} was called`);
@@ -132,7 +137,11 @@ export class UserController {
             query.offset,
         );
 
-        return { data: users, meta: { count } };
+        const userOutput = plainToInstance(UserOutput, users, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: userOutput, meta: { count } };
     }
 
     @UseInterceptors(ClassSerializerInterceptor)
@@ -151,13 +160,18 @@ export class UserController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(ERole.ADMIN)
     async getUser(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') id: number,
     ): Promise<BaseApiResponse<UserOutput>> {
         this.logger.log(ctx, `${this.getUser.name} was called`);
 
         const user = await this.userService.getUserById(ctx, id);
-        return { data: user, meta: {} };
+
+        const userOutput = plainToInstance(UserOutput, user, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: userOutput, meta: {} };
     }
 
     @Patch(':id')
@@ -176,7 +190,7 @@ export class UserController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(ERole.ADMIN)
     async updateUser(
-        @ReqContext() ctx: RequestContext,
+        @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') userId: number,
         @Body() input: UpdateUserInput,
     ): Promise<BaseApiResponse<UserOutput>> {
