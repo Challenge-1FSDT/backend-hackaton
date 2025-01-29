@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { BaseAclService } from '../../shared/acl/acl.service';
+
 import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
-import { Lecture } from '../entities/lecture.entity';
+import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
+import { Lecture } from '../entities/lecture.entity';
 
 @Injectable()
 export class LectureAclService extends BaseAclService<ESchoolRole, Lecture> {
@@ -16,11 +17,20 @@ export class LectureAclService extends BaseAclService<ESchoolRole, Lecture> {
             [Action.Read, Action.List],
             this.isLectureTeacher,
         );
+        this.canDo(ESchoolRole.STUDENT, [Action.Read], this.isLectureStudent);
     }
 
     async isLectureTeacher(lecture: Lecture, user: Actor): Promise<boolean> {
         return (await lecture.subject.teachers).some(
+            // FIXME: replace by service call
             (teacher) => teacher.id === user.id,
+        );
+    }
+
+    async isLectureStudent(lecture: Lecture, user: Actor): Promise<boolean> {
+        return (await lecture.class.students).some(
+            // FIXME: replace by service call
+            (student) => student.id === user.id,
         );
     }
 }
