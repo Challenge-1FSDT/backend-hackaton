@@ -31,10 +31,14 @@ export class Class {
     @ManyToOne(() => School, (school) => school.classrooms, { nullable: false })
     school: School;
 
-    @OneToMany(() => ClassStudent, (classStudent) => classStudent.class)
+    @OneToMany(() => ClassStudent, (classStudent) => classStudent.class, {
+        cascade: ['soft-remove'],
+    })
     classStudents: Promise<ClassStudent[]>;
 
-    @OneToMany(() => Lecture, (lecture) => lecture.class)
+    @OneToMany(() => Lecture, (lecture) => lecture.class, {
+        cascade: ['soft-remove'],
+    })
     lectures: Promise<Lecture[]>;
 
     // * Timestamps
