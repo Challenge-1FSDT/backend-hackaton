@@ -3,7 +3,7 @@ import { Expose, Type } from 'class-transformer';
 
 import { AuthorOutput } from './author-output.dto';
 
-export class ArticleOutput {
+export class CommentOutput {
     @Expose()
     @ApiProperty()
     id: number;

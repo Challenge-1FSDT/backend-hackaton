@@ -6,6 +6,7 @@ import { ArticleModule } from './article/article.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './class/class.module';
+import { ClassStudentModule } from './class-student/class-student.module';
 import { ClassroomModule } from './classroom/classroom.module';
 import { LectureModule } from './lecture/lecture.module';
 import { SchoolModule } from './school/school.module';
@@ -22,6 +23,7 @@ import { UserModule } from './user/user.module';
         ArticleModule,
         AttendanceModule,
         ClassModule,
+        ClassStudentModule,
         ClassroomModule,
         LectureModule,
         SchoolModule,

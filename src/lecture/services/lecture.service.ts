@@ -32,6 +32,14 @@ export class LectureService {
     ): Promise<{ lectures: Lecture[]; count: number }> {
         this.logger.log(ctx, `${this.getLectures.name} was called`);
 
+        const actor: Actor = ctx.user.schoolMember!;
+        const isAllowed = await this.aclService
+            .forActor(actor)
+            .canDoAction(Action.List);
+        if (!isAllowed) {
+            throw new ForbiddenException();
+        }
+
         const [lectures, count] = await this.repository.findAndCount({
             where: {
                 ...where,
@@ -47,8 +55,10 @@ export class LectureService {
                 }),
                 ...(ctx.user.schoolMember?.role === ESchoolRole.STUDENT && {
                     class: {
-                        students: {
-                            id: ctx.user.schoolMember!.id,
+                        classStudents: {
+                            schoolMember: {
+                                id: ctx.user.schoolMember!.id,
+                            },
                         },
                     },
                 }),
@@ -56,14 +66,6 @@ export class LectureService {
             take: pagination.limit,
             skip: pagination.offset,
         });
-
-        const actor: Actor = ctx.user.schoolMember!;
-        const isAllowed = await this.aclService
-            .forActor(actor)
-            .canDoAction(Action.List);
-        if (!isAllowed) {
-            throw new ForbiddenException();
-        }
 
         return { lectures, count };
     }

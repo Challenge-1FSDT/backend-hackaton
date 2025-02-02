@@ -9,5 +9,8 @@ export class SchoolMemberClaims {
     @Transform(({ value, obj }) => value ?? obj.school.id)
     schoolId: number;
     @Expose()
+    @Transform(({ value, obj }) => value ?? obj.user.id)
+    userId: number;
+    @Expose()
     role: ESchoolRole;
 }

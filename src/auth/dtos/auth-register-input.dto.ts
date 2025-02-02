@@ -7,6 +7,7 @@ import {
     IsOptional,
     IsPhoneNumber,
     IsString,
+    IsStrongPassword,
     Length,
     MaxLength,
 } from 'class-validator';
@@ -48,7 +49,7 @@ export class RegisterInput {
     @MaxLength(11)
     taxId?: string;
 
-    @ApiPropertyOptional()
+    @ApiProperty()
     @IsNotEmpty()
     @IsDateString()
     @Transform(({ value }) => DateTime.fromISO(value), {
@@ -62,6 +63,11 @@ export class RegisterInput {
     @ApiProperty()
     @IsNotEmpty()
     @IsString()
+    @IsStrongPassword({
+        minLength: 8,
+        minNumbers: 1,
+        minSymbols: 1,
+    })
     @Length(6, 100)
     password: string;
 }

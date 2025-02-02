@@ -48,7 +48,7 @@ export class CreateSchoolMemberInput {
     @MaxLength(11)
     taxId?: string;
 
-    @ApiPropertyOptional()
+    @ApiProperty()
     @IsNotEmpty()
     @IsDateString()
     @Transform(({ value }) => DateTime.fromISO(value), {
@@ -66,7 +66,9 @@ export class CreateSchoolMemberInput {
     @MaxLength(100)
     registration?: string;
 
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({
+        enum: ESchoolRole,
+    })
     @IsOptional()
     @IsNotEmpty()
     @IsEnum(ESchoolRole)

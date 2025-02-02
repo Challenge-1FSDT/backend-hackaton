@@ -92,6 +92,7 @@ export class SchoolService {
         const actor: Actor = ctx.user!;
         const isAllowed = this.aclService
             .forActor(actor)
+            .withContext(ctx)
             .canDoAction(Action.Create);
         if (!isAllowed) {
             throw new ForbiddenException();
@@ -104,7 +105,11 @@ export class SchoolService {
             throw new InternalServerErrorException();
         }
         await this.schoolMemberService.createSchoolMember(ctx, savedSchool.id, {
-            ...user,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            phone: user.phone,
+            taxId: user.taxId,
             dateOfBirth: DateTime.fromJSDate(user.dateOfBirth),
             role: ESchoolRole.ADMIN,
         });

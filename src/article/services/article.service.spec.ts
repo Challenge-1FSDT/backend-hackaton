@@ -7,17 +7,17 @@ import { RequestContext } from '../../shared/request-context/request-context.dto
 import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
 import {
-    CreateArticleInput,
+    CreateCommentInput,
     UpdateArticleInput,
 } from '../dtos/article-input.dto';
-import { ArticleOutput } from '../dtos/article-output.dto';
+import { CommentOutput } from '../dtos/comment-output.dto';
 import { Article } from '../entities/article.entity';
 import { ArticleRepository } from '../repositories/article.repository';
-import { ArticleService } from './article.service';
+import { CommentService } from './comment.service';
 import { ArticleAclService } from './article-acl.service';
 
 describe('ArticleService', () => {
-    let service: ArticleService;
+    let service: CommentService;
     let mockedRepository: any;
     let mockedUserService: any;
     const mockedLogger = { setContext: jest.fn(), log: jest.fn() };
@@ -25,7 +25,7 @@ describe('ArticleService', () => {
     beforeEach(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
             providers: [
-                ArticleService,
+                CommentService,
                 {
                     provide: ArticleRepository,
                     useValue: {
@@ -50,7 +50,7 @@ describe('ArticleService', () => {
             ],
         }).compile();
 
-        service = moduleRef.get<ArticleService>(ArticleService);
+        service = moduleRef.get<CommentService>(CommentService);
         mockedRepository = moduleRef.get(ArticleRepository);
         mockedUserService = moduleRef.get(UserService);
     });
@@ -69,7 +69,7 @@ describe('ArticleService', () => {
                 username: 'testuser',
             };
 
-            service.createArticle(ctx, new CreateArticleInput());
+            service.createArticle(ctx, new CreateCommentInput());
             expect(mockedUserService.getUserById).toHaveBeenCalledWith(ctx, 1);
         });
 
@@ -80,7 +80,7 @@ describe('ArticleService', () => {
                 username: 'testuser',
             };
 
-            const articleInput: CreateArticleInput = {
+            const articleInput: CreateCommentInput = {
                 title: 'Test',
                 post: 'Hello, world!',
             };
@@ -113,7 +113,7 @@ describe('ArticleService', () => {
         const currentDate = new Date();
 
         it('should return articles when found', async () => {
-            const expectedOutput: ArticleOutput[] = [
+            const expectedOutput: CommentOutput[] = [
                 {
                     id: 1,
                     title: 'Test',
@@ -136,7 +136,7 @@ describe('ArticleService', () => {
         });
 
         it('should return empty array when articles are not found', async () => {
-            const expectedOutput: ArticleOutput[] = [];
+            const expectedOutput: CommentOutput[] = [];
 
             mockedRepository.findAndCount.mockResolvedValue([
                 expectedOutput,
@@ -155,7 +155,7 @@ describe('ArticleService', () => {
             const id = 1;
             const currentDate = new Date();
 
-            const expectedOutput: ArticleOutput = {
+            const expectedOutput: CommentOutput = {
                 id: 1,
                 title: 'Test',
                 post: 'Hello, world!',

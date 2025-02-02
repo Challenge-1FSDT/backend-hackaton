@@ -3,7 +3,6 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { plainToInstance } from 'class-transformer';
 
 import { ERole } from '../../auth/constants/role.constant';
 import { Action } from '../../shared/acl/action.constant';
@@ -33,7 +32,7 @@ export class SchoolMemberService {
         ctx: AuthenticatedRequestContext,
         schoolId: number,
         userId: number,
-    ): Promise<SchoolMember | null> {
+    ): Promise<SchoolMember> {
         this.logger.log(ctx, `${this.getSchoolMember.name} was called`);
 
         const member = await this.repository.findOne({
@@ -64,10 +63,6 @@ export class SchoolMemberService {
     ): Promise<SchoolMember> {
         this.logger.log(ctx, `${this.createSchoolMember.name} was called`);
 
-        const schoolMember = plainToInstance(SchoolMember, create, {
-            excludeExtraneousValues: true,
-        });
-
         const actor: Actor = ctx.user.schoolMember!;
         const isAllowed =
             ctx.user.role === ERole.ADMIN ||
@@ -82,23 +77,18 @@ export class SchoolMemberService {
             throw new ForbiddenException();
         }
 
-        if (
-            isOfHigherOrEqualRole(
-                ctx.user.schoolMember!.role,
-                schoolMember.role,
-            )
-        ) {
-            throw new ForbiddenException();
-        }
-
         const user =
             (await this.userService.findByEmail(ctx, create.email)) ||
             (await this.userService.createUser(ctx, {
                 ...create,
                 role: ERole.USER,
             }));
-        schoolMember.user = user;
-        const savedMember = await this.repository.save(schoolMember);
+
+        const savedMember = await this.repository.save({
+            ...create,
+            schoolId,
+            userId: user.id,
+        });
 
         return savedMember;
     }

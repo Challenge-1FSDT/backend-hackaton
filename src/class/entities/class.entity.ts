@@ -3,17 +3,15 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
+import { ClassStudent } from '../../class-student/entities/class-student.entity';
 import { Lecture } from '../../lecture/entities/lecture.entity';
 import { School } from '../../school/entities/school.entity';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
 
 @Entity('classes')
 export class Class {
@@ -33,9 +31,8 @@ export class Class {
     @ManyToOne(() => School, (school) => school.classrooms, { nullable: false })
     school: School;
 
-    @ManyToMany(() => SchoolMember, (schoolMember) => schoolMember.classes)
-    @JoinTable({ name: 'class_students' })
-    students: Promise<SchoolMember[]>;
+    @OneToMany(() => ClassStudent, (classStudent) => classStudent.class)
+    classStudents: Promise<ClassStudent[]>;
 
     @OneToMany(() => Lecture, (lecture) => lecture.class)
     lectures: Promise<Lecture[]>;

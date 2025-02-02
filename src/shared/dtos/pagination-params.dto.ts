@@ -23,3 +23,8 @@ export class PaginationParamsDto {
     @Transform(({ value }) => parseInt(value, 10), { toClassOnly: true })
     offset = 0;
 }
+
+export interface PaginatedResult<T> {
+    data: T[];
+    count: number;
+}

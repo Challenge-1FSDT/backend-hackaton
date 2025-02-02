@@ -8,8 +8,15 @@ export interface RequestContext {
     ip: string | undefined;
 
     schoolId: number | null;
+
+    user: UserAccessTokenClaims | null;
 }
 
 export interface AuthenticatedRequestContext extends RequestContext {
     user: UserAccessTokenClaims;
+}
+
+export interface SchoolAuthenticatedRequestContext
+    extends AuthenticatedRequestContext {
+    schoolId: number;
 }

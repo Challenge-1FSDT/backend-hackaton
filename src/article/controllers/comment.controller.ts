@@ -30,59 +30,59 @@ import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
 import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import {
-    CreateArticleInput,
+    CreateCommentInput,
     UpdateArticleInput,
 } from '../dtos/article-input.dto';
-import { ArticleOutput } from '../dtos/article-output.dto';
-import { ArticleService } from '../services/article.service';
+import { CommentOutput } from '../dtos/comment-output.dto';
+import { CommentService } from '../services/comment.service';
 
-@ApiTags('articles')
-@Controller('articles')
-export class ArticleController {
+@ApiTags('comments')
+@Controller('comments')
+export class CommentController {
     constructor(
-        private readonly articleService: ArticleService,
+        private readonly commentService: CommentService,
         private readonly logger: AppLogger,
     ) {
-        this.logger.setContext(ArticleController.name);
+        this.logger.setContext(CommentController.name);
     }
 
     @Post()
     @ApiOperation({
-        summary: 'Create article API',
+        summary: 'Create a comment',
     })
     @ApiResponse({
         status: HttpStatus.CREATED,
-        type: SwaggerBaseApiResponse(ArticleOutput),
+        type: SwaggerBaseApiResponse(CommentOutput),
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     async createArticle(
         @ReqContext() ctx: AuthenticatedRequestContext,
-        @Body() input: CreateArticleInput,
-    ): Promise<BaseApiResponse<ArticleOutput>> {
-        const article = await this.articleService.createArticle(ctx, input);
+        @Body() input: CreateCommentInput,
+    ): Promise<BaseApiResponse<CommentOutput>> {
+        const article = await this.commentService.createArticle(ctx, input);
         return { data: article, meta: {} };
     }
 
     @Get()
     @ApiOperation({
-        summary: 'Get articles as a list API',
+        summary: 'Get comments as a list',
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: SwaggerBaseApiResponse([ArticleOutput]),
+        type: SwaggerBaseApiResponse([CommentOutput]),
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
-    async getArticles(
+    async getComments(
         @ReqContext() ctx: AuthenticatedRequestContext,
         @Query() query: PaginationParamsDto,
-    ): Promise<BaseApiResponse<ArticleOutput[]>> {
-        this.logger.log(ctx, `${this.getArticles.name} was called`);
+    ): Promise<BaseApiResponse<CommentOutput[]>> {
+        this.logger.log(ctx, `${this.getComments.name} was called`);
 
-        const { articles, count } = await this.articleService.getArticles(
+        const { articles, count } = await this.commentService.getArticles(
             ctx,
             query.limit,
             query.offset,
@@ -97,7 +97,7 @@ export class ArticleController {
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: SwaggerBaseApiResponse(ArticleOutput),
+        type: SwaggerBaseApiResponse(CommentOutput),
     })
     @ApiResponse({
         status: HttpStatus.NOT_FOUND,
@@ -109,10 +109,10 @@ export class ArticleController {
     async getArticle(
         @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') id: number,
-    ): Promise<BaseApiResponse<ArticleOutput>> {
+    ): Promise<BaseApiResponse<CommentOutput>> {
         this.logger.log(ctx, `${this.getArticle.name} was called`);
 
-        const article = await this.articleService.getArticleById(ctx, id);
+        const article = await this.commentService.getArticleById(ctx, id);
         return { data: article, meta: {} };
     }
 
@@ -122,7 +122,7 @@ export class ArticleController {
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: SwaggerBaseApiResponse(ArticleOutput),
+        type: SwaggerBaseApiResponse(CommentOutput),
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
@@ -131,8 +131,8 @@ export class ArticleController {
         @ReqContext() ctx: AuthenticatedRequestContext,
         @Param('id') articleId: number,
         @Body() input: UpdateArticleInput,
-    ): Promise<BaseApiResponse<ArticleOutput>> {
-        const article = await this.articleService.updateArticle(
+    ): Promise<BaseApiResponse<CommentOutput>> {
+        const article = await this.commentService.updateArticle(
             ctx,
             articleId,
             input,
@@ -156,6 +156,6 @@ export class ArticleController {
     ): Promise<void> {
         this.logger.log(ctx, `${this.deleteArticle.name} was called`);
 
-        return this.articleService.deleteArticle(ctx, id);
+        return this.commentService.deleteArticle(ctx, id);
     }
 }

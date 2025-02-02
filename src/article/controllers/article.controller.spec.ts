@@ -5,15 +5,15 @@ import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { User } from '../../user/entities/user.entity';
 import {
-    CreateArticleInput,
+    CreateCommentInput,
     UpdateArticleInput,
 } from '../dtos/article-input.dto';
-import { ArticleOutput } from '../dtos/article-output.dto';
-import { ArticleService } from '../services/article.service';
-import { ArticleController } from './article.controller';
+import { CommentOutput } from '../dtos/comment-output.dto';
+import { CommentService } from '../services/comment.service';
+import { CommentController } from './comment.controller';
 
 describe('ArticleController', () => {
-    let controller: ArticleController;
+    let controller: CommentController;
     const mockedArticleService = {
         getArticles: jest.fn(),
         getArticleById: jest.fn(),
@@ -25,14 +25,14 @@ describe('ArticleController', () => {
 
     beforeEach(async () => {
         const moduleRef: TestingModule = await Test.createTestingModule({
-            controllers: [ArticleController],
+            controllers: [CommentController],
             providers: [
-                { provide: ArticleService, useValue: mockedArticleService },
+                { provide: CommentService, useValue: mockedArticleService },
                 { provide: AppLogger, useValue: mockedLogger },
             ],
         }).compile();
 
-        controller = moduleRef.get<ArticleController>(ArticleController);
+        controller = moduleRef.get<CommentController>(CommentController);
     });
 
     it('should be defined', () => {
@@ -42,7 +42,7 @@ describe('ArticleController', () => {
     const ctx = new RequestContext();
 
     describe('Create article', () => {
-        let input: CreateArticleInput;
+        let input: CreateCommentInput;
 
         beforeEach(() => {
             input = {
@@ -61,7 +61,7 @@ describe('ArticleController', () => {
 
         it('should return data which includes info from articleService.createArticle', async () => {
             const currentDate = new Date();
-            const expectedOutput: ArticleOutput = {
+            const expectedOutput: CommentOutput = {
                 id: 1,
                 title: 'Test',
                 post: 'Hello, world!',
@@ -104,7 +104,7 @@ describe('ArticleController', () => {
                 offset: 0,
             };
 
-            controller.getArticles(ctx, queryParams);
+            controller.getComments(ctx, queryParams);
             expect(mockedArticleService.getArticles).toHaveBeenCalledWith(
                 ctx,
                 queryParams.limit,

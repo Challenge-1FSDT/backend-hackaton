@@ -6,11 +6,12 @@ import {
     Entity,
     ManyToMany,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
-import { Class } from '../../class/entities/class.entity';
+import { ClassStudent } from '../../class-student/entities/class-student.entity';
 import { School } from '../../school/entities/school.entity';
 import { Subject } from '../../subject/entities/subject.entity';
 import { ESchoolRole } from '../constants/schoolRole.constant';
@@ -32,12 +33,16 @@ export class SchoolMember {
     // * Relations
     @ManyToOne(() => School, (school) => school.members, { nullable: false })
     school: School;
+    @Column({ nullable: false })
+    schoolId: number;
 
     @ManyToOne(() => User, (user) => user.memberships, { nullable: true })
     user?: User;
+    @Column({ nullable: true })
+    userId?: number;
 
-    @ManyToMany(() => Class, (schoolClass) => schoolClass.students)
-    classes: Promise<Class[]>;
+    @OneToMany(() => ClassStudent, (classStudent) => classStudent.schoolMember)
+    classStudents: Promise<ClassStudent[]>;
 
     @ManyToMany(() => Subject, (subject) => subject.teachers)
     subjects: Promise<Subject[]>;

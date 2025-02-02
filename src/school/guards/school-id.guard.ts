@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+    BadRequestException,
+    CanActivate,
+    ExecutionContext,
+    Injectable,
+} from '@nestjs/common';
 
 import { isValidNumber } from '../../shared/typeguards';
 
@@ -10,6 +15,9 @@ export class SchoolIdGuard implements CanActivate {
         const schoolId = Number(
             request.params.schoolId || request.query.schoolId,
         );
+        if (!isValidNumber(schoolId)) {
+            throw new BadRequestException('schoolId must be provided');
+        }
         return isValidNumber(schoolId);
     }
 }

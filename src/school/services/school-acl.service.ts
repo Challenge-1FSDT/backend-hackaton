@@ -16,7 +16,7 @@ export class SchoolAclService extends BaseAclService<ERole, School> {
         this.canDo(
             ERole.USER,
             [Action.List, Action.Read],
-            this.hasBasicAccessTo,
+            this.hasBasicAccessTo.bind(this),
         );
     }
 
@@ -25,14 +25,13 @@ export class SchoolAclService extends BaseAclService<ERole, School> {
         actor: Actor,
         ctx?: AuthenticatedRequestContext,
     ): Promise<boolean> {
-        if (!ctx) {
-            return false;
-        }
-
-        return !!(await this.schoolMemberService.getSchoolMember(
-            ctx,
-            school.id,
-            actor.id,
-        ));
+        return (
+            !ctx?.user?.schoolMember ||
+            !!(await this.schoolMemberService.getSchoolMember(
+                ctx,
+                school.id,
+                actor.id,
+            ))
+        );
     }
 }

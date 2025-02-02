@@ -52,9 +52,7 @@ export class UserService {
         const match = await compare(pass, user.password);
         if (!match) throw new UnauthorizedException();
 
-        return plainToClass(User, user, {
-            excludeExtraneousValues: true,
-        });
+        return user;
     }
 
     async getUsers(

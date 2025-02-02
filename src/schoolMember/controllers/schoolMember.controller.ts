@@ -33,7 +33,7 @@ import { SchoolMemberOutput } from '../dtos/school-member-output.dto';
 import { SchoolRolesGuard } from '../guards/schoolRoles.guard';
 import { SchoolMemberService } from '../services/schoolMember.service';
 
-@ApiTags('school members')
+@ApiTags('schools', 'school members')
 @Controller('schools/:schoolId/members')
 export class SchoolMemberController {
     constructor(

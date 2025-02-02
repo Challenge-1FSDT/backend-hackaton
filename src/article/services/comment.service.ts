@@ -8,29 +8,29 @@ import { AuthenticatedRequestContext } from '../../shared/request-context/reques
 import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
 import {
-    CreateArticleInput,
+    CreateCommentInput,
     UpdateArticleInput,
 } from '../dtos/article-input.dto';
-import { ArticleOutput } from '../dtos/article-output.dto';
+import { CommentOutput } from '../dtos/comment-output.dto';
 import { Article } from '../entities/article.entity';
 import { ArticleRepository } from '../repositories/article.repository';
 import { ArticleAclService } from './article-acl.service';
 
 @Injectable()
-export class ArticleService {
+export class CommentService {
     constructor(
         private repository: ArticleRepository,
         private userService: UserService,
         private aclService: ArticleAclService,
         private readonly logger: AppLogger,
     ) {
-        this.logger.setContext(ArticleService.name);
+        this.logger.setContext(CommentService.name);
     }
 
     async createArticle(
         ctx: AuthenticatedRequestContext,
-        input: CreateArticleInput,
-    ): Promise<ArticleOutput> {
+        input: CreateCommentInput,
+    ): Promise<CommentOutput> {
         this.logger.log(ctx, `${this.createArticle.name} was called`);
 
         const article = plainToClass(Article, input);
@@ -51,7 +51,7 @@ export class ArticleService {
         this.logger.log(ctx, `calling ${ArticleRepository.name}.save`);
         const savedArticle = await this.repository.save(article);
 
-        return plainToClass(ArticleOutput, savedArticle, {
+        return plainToClass(CommentOutput, savedArticle, {
             excludeExtraneousValues: true,
         });
     }
@@ -60,7 +60,7 @@ export class ArticleService {
         ctx: AuthenticatedRequestContext,
         limit: number,
         offset: number,
-    ): Promise<{ articles: ArticleOutput[]; count: number }> {
+    ): Promise<{ articles: CommentOutput[]; count: number }> {
         this.logger.log(ctx, `${this.getArticles.name} was called`);
 
         const actor: Actor = ctx.user!;
@@ -79,7 +79,7 @@ export class ArticleService {
             skip: offset,
         });
 
-        const articlesOutput = plainToClass(ArticleOutput, articles, {
+        const articlesOutput = plainToClass(CommentOutput, articles, {
             excludeExtraneousValues: true,
         });
 
@@ -89,7 +89,7 @@ export class ArticleService {
     async getArticleById(
         ctx: AuthenticatedRequestContext,
         id: number,
-    ): Promise<ArticleOutput> {
+    ): Promise<CommentOutput> {
         this.logger.log(ctx, `${this.getArticleById.name} was called`);
 
         const actor: Actor = ctx.user!;
@@ -104,7 +104,7 @@ export class ArticleService {
             throw new UnauthorizedException();
         }
 
-        return plainToClass(ArticleOutput, article, {
+        return plainToClass(CommentOutput, article, {
             excludeExtraneousValues: true,
         });
     }
@@ -113,7 +113,7 @@ export class ArticleService {
         ctx: AuthenticatedRequestContext,
         articleId: number,
         input: UpdateArticleInput,
-    ): Promise<ArticleOutput> {
+    ): Promise<CommentOutput> {
         this.logger.log(ctx, `${this.updateArticle.name} was called`);
 
         this.logger.log(ctx, `calling ${ArticleRepository.name}.getById`);
@@ -136,7 +136,7 @@ export class ArticleService {
         this.logger.log(ctx, `calling ${ArticleRepository.name}.save`);
         const savedArticle = await this.repository.save(updatedArticle);
 
-        return plainToClass(ArticleOutput, savedArticle, {
+        return plainToClass(CommentOutput, savedArticle, {
             excludeExtraneousValues: true,
         });
     }
