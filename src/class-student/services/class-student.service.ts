@@ -62,12 +62,13 @@ export class ClassStudentService {
         return { data, count };
     }
 
-    public async getByUserId(
+    public async getOne(
         ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
         where: FindOptionsWhere<ClassStudent>,
         relations: FindOptionsRelations<ClassStudent>,
     ): Promise<ClassStudent> {
-        this.logger.log(ctx, `${this.getByUserId.name} was called`);
+        this.logger.log(ctx, `${this.getOne.name} was called`);
 
         const actor: Actor = ctx.user.schoolMember!;
         const isAllowed =
@@ -83,8 +84,11 @@ export class ClassStudentService {
         const data = await this.repository.findOne({
             where: {
                 ...where,
+                school: {
+                    id: schoolId,
+                },
             },
-            relations: relations,
+            relations,
         });
         if (!data) {
             throw new NotFoundException();

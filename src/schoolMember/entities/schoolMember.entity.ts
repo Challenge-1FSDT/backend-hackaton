@@ -4,16 +4,13 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
-    ManyToMany,
+    JoinColumn,
     ManyToOne,
-    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
-import { ClassStudent } from '../../class-student/entities/class-student.entity';
 import { School } from '../../school/entities/school.entity';
-import { Subject } from '../../subject/entities/subject.entity';
 import { ESchoolRole } from '../constants/schoolRole.constant';
 
 @Entity('school_members')
@@ -32,20 +29,12 @@ export class SchoolMember {
 
     // * Relations
     @ManyToOne(() => School, (school) => school.members, { nullable: false })
+    @JoinColumn()
     school: School;
-    @Column({ nullable: false })
-    schoolId: number;
 
     @ManyToOne(() => User, (user) => user.memberships, { nullable: true })
+    @JoinColumn()
     user?: User;
-    @Column({ nullable: true })
-    userId?: number;
-
-    @OneToMany(() => ClassStudent, (classStudent) => classStudent.schoolMember)
-    classStudents: Promise<ClassStudent[]>;
-
-    @ManyToMany(() => Subject, (subject) => subject.teachers)
-    subjects: Promise<Subject[]>;
 
     // * Timestamps
     @CreateDateColumn({ name: 'createdAt' })

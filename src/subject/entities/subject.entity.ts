@@ -3,8 +3,6 @@ import {
     CreateDateColumn,
     DeleteDateColumn,
     Entity,
-    JoinTable,
-    ManyToMany,
     ManyToOne,
     OneToMany,
     PrimaryGeneratedColumn,
@@ -13,7 +11,7 @@ import {
 
 import { Lecture } from '../../lecture/entities/lecture.entity';
 import { School } from '../../school/entities/school.entity';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { SubjectTeacher } from '../../subject-teacher/entities/subject-teacher.entity';
 
 @Entity('subjects')
 export class Subject {
@@ -30,9 +28,8 @@ export class Subject {
     @ManyToOne(() => School, (school) => school.classrooms, { nullable: false })
     school: School;
 
-    @ManyToMany(() => SchoolMember, (schoolMember) => schoolMember.subjects)
-    @JoinTable({ name: 'subject_teachers' })
-    teachers: Promise<SchoolMember[]>;
+    @OneToMany(() => SubjectTeacher, (schoolMember) => schoolMember.subject)
+    subjectTeachers: Promise<SubjectTeacher[]>;
 
     @OneToMany(() => Lecture, (lecture) => lecture.subject)
     lectures: Promise<Lecture[]>;

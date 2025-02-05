@@ -19,35 +19,40 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { SchoolIdGuard } from 'src/school/guards/school-id.guard';
-import { AppLogger } from 'src/shared/logger/logger.service';
 
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { SchoolIdGuard } from '../../school/guards/school-id.guard';
+import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
+import { SchoolRoles } from '../../schoolMember/decorators/schoolRole.decorator';
 import { SchoolMemberOutput } from '../../schoolMember/dtos/school-member-output.dto';
+import { SchoolRolesGuard } from '../../schoolMember/guards/schoolRoles.guard';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,
     SwaggerBaseApiResponse,
 } from '../../shared/dtos/base-api-response.dto';
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
+import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
 import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
-import { CreateClassStudentInput } from '../dtos/create-class-student-input.dto';
-import { ClassStudentService } from '../services/class-student.service';
+import { CreateSubjectTeacherInput } from '../dtos/create-subject-teacher-input.dto';
+import { SubjectTeacherService } from '../services/subject-teacher.service';
 
-@ApiTags('classes', 'class students')
-@Controller('classes/:classId/students')
-export class ClassStudentController {
+@ApiTags('subjects', 'subject teachers')
+@Controller('subjects/:subjectId/teachers')
+export class SubjectTeacherController {
     constructor(
-        private readonly classStudentService: ClassStudentService,
+        private readonly service: SubjectTeacherService,
         private readonly logger: AppLogger,
     ) {
-        this.logger.setContext(ClassStudentController.name);
+        this.logger.setContext(SubjectTeacherController.name);
     }
 
     @UseInterceptors(ClassSerializerInterceptor)
     @Get()
-    @ApiOperation({ summary: 'Get students' })
+    @ApiOperation({
+        summary: 'Get all teachers for a subject',
+    })
     @ApiResponse({
         status: HttpStatus.OK,
         type: SwaggerBaseApiResponse([SchoolMemberOutput]),
@@ -56,24 +61,21 @@ export class ClassStudentController {
         status: HttpStatus.UNAUTHORIZED,
         type: BaseApiErrorResponse,
     })
-    @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
-        type: BaseApiErrorResponse,
-    })
     @UseGuards(JwtAuthGuard, SchoolIdGuard)
     @ApiBearerAuth()
-    public async getAll(
+    public async getPaged(
         @ReqContext() ctx: SchoolAuthenticatedRequestContext,
-        @Param('classId', ParseIntPipe) classId: number,
+        @Param('subjectId', ParseIntPipe) subjectId: number,
         @Query() pagination: PaginationParamsDto,
     ): Promise<BaseApiResponse<SchoolMemberOutput[]>> {
-        this.logger.log(ctx, `${this.getAll.name} was called`);
+        this.logger.log(ctx, `${this.getPaged.name} was called`);
 
-        const { data, count } = await this.classStudentService.getPaged(
+        const { data, count } = await this.service.getPaged(
             ctx,
+            ctx.schoolId,
             {
-                class: {
-                    id: classId,
+                subject: {
+                    id: subjectId,
                 },
             },
             pagination,
@@ -82,20 +84,18 @@ export class ClassStudentController {
             },
         );
 
-        const output = plainToInstance(
-            SchoolMemberOutput,
-            data.map((entry) => entry.schoolMember),
-            {
-                excludeExtraneousValues: false,
-            },
-        );
+        const output = plainToInstance(SchoolMemberOutput, data, {
+            excludeExtraneousValues: true,
+        });
 
         return { data: output, meta: { count } };
     }
 
     @UseInterceptors(ClassSerializerInterceptor)
     @Get(':userId')
-    @ApiOperation({ summary: 'Get a student by the userId' })
+    @ApiOperation({
+        summary: 'Get a teacher for a subject',
+    })
     @ApiResponse({
         status: HttpStatus.OK,
         type: SwaggerBaseApiResponse(SchoolMemberOutput),
@@ -105,24 +105,24 @@ export class ClassStudentController {
         type: BaseApiErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
+        status: HttpStatus.NOT_FOUND,
         type: BaseApiErrorResponse,
     })
     @UseGuards(JwtAuthGuard, SchoolIdGuard)
     @ApiBearerAuth()
-    public async getByUserId(
+    public async getById(
         @ReqContext() ctx: SchoolAuthenticatedRequestContext,
-        @Param('classId', ParseIntPipe) classId: number,
+        @Param('subjectId', ParseIntPipe) subjectId: number,
         @Param('userId', ParseIntPipe) userId: number,
     ): Promise<BaseApiResponse<SchoolMemberOutput>> {
-        this.logger.log(ctx, `${this.getByUserId.name} was called`);
+        this.logger.log(ctx, `${this.getById.name} was called`);
 
-        const data = await this.classStudentService.getOne(
+        const data = await this.service.getOne(
             ctx,
             ctx.schoolId,
             {
-                class: {
-                    id: classId,
+                subject: {
+                    id: subjectId,
                 },
                 schoolMember: {
                     user: {
@@ -130,10 +130,12 @@ export class ClassStudentController {
                     },
                 },
             },
-            { schoolMember: true },
+            {
+                schoolMember: true,
+            },
         );
 
-        const output = plainToInstance(SchoolMemberOutput, data.schoolMember, {
+        const output = plainToInstance(SchoolMemberOutput, data, {
             excludeExtraneousValues: true,
         });
 
@@ -142,7 +144,9 @@ export class ClassStudentController {
 
     @UseInterceptors(ClassSerializerInterceptor)
     @Post()
-    @ApiOperation({ summary: 'Create a student' })
+    @ApiOperation({
+        summary: 'Add a teacher to a subject',
+    })
     @ApiResponse({
         status: HttpStatus.CREATED,
         type: SwaggerBaseApiResponse(SchoolMemberOutput),
@@ -152,25 +156,27 @@ export class ClassStudentController {
         type: BaseApiErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
+        status: HttpStatus.BAD_REQUEST,
         type: BaseApiErrorResponse,
     })
-    @UseGuards(JwtAuthGuard, SchoolIdGuard)
+    @UseGuards(JwtAuthGuard, SchoolIdGuard, SchoolRolesGuard)
+    @SchoolRoles(ESchoolRole.ADMIN, ESchoolRole.FACULTY)
     @ApiBearerAuth()
-    public async postStudent(
+    public async postSubjectTeacher(
         @ReqContext() ctx: SchoolAuthenticatedRequestContext,
-        @Param('classId', ParseIntPipe) classId: number,
-        @Body() body: CreateClassStudentInput,
+        @Param('subjectId', ParseIntPipe) subjectId: number,
+        @Body() body: CreateSubjectTeacherInput,
     ): Promise<BaseApiResponse<SchoolMemberOutput>> {
-        this.logger.log(ctx, `${this.postStudent.name} was called`);
+        this.logger.log(ctx, `${this.postSubjectTeacher.name} was called`);
 
-        const data = await this.classStudentService.createStudent(
+        const data = await this.service.create(
             ctx,
-            classId,
+            ctx.schoolId,
+            subjectId,
             body,
         );
 
-        const output = plainToInstance(SchoolMemberOutput, data.schoolMember, {
+        const output = plainToInstance(SchoolMemberOutput, data, {
             excludeExtraneousValues: true,
         });
 
@@ -179,27 +185,31 @@ export class ClassStudentController {
 
     @UseInterceptors(ClassSerializerInterceptor)
     @Delete(':userId')
-    @ApiOperation({ summary: 'Deletes a student' })
+    @ApiOperation({
+        summary: 'Remove a teacher from a subject',
+    })
     @ApiResponse({
-        status: HttpStatus.OK,
+        status: HttpStatus.NO_CONTENT,
+        type: BaseApiResponse,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,
         type: BaseApiErrorResponse,
     })
     @ApiResponse({
-        status: HttpStatus.FORBIDDEN,
+        status: HttpStatus.NOT_FOUND,
         type: BaseApiErrorResponse,
     })
-    @UseGuards(JwtAuthGuard, SchoolIdGuard)
+    @UseGuards(JwtAuthGuard, SchoolIdGuard, SchoolRolesGuard)
+    @SchoolRoles(ESchoolRole.ADMIN, ESchoolRole.FACULTY)
     @ApiBearerAuth()
-    public async deleteStudent(
+    public async deleteSubjectTeacher(
         @ReqContext() ctx: SchoolAuthenticatedRequestContext,
-        @Param('classId', ParseIntPipe) classId: number,
+        @Param('subjectId', ParseIntPipe) subjectId: number,
         @Param('userId', ParseIntPipe) userId: number,
     ): Promise<void> {
-        this.logger.log(ctx, `${this.deleteStudent.name} was called`);
+        this.logger.log(ctx, `${this.deleteSubjectTeacher.name} was called`);
 
-        await this.classStudentService.deleteByUserId(ctx, classId, userId);
+        await this.service.delete(ctx, ctx.schoolId, subjectId, userId);
     }
 }

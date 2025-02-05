@@ -18,6 +18,7 @@ export class SchoolIdGuard implements CanActivate {
         if (!isValidNumber(schoolId)) {
             throw new BadRequestException('schoolId must be provided');
         }
+
         return isValidNumber(schoolId);
     }
 }

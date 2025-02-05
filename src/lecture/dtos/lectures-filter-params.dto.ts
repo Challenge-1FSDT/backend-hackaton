@@ -1,30 +1,19 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
-import { IsDateString } from 'class-validator';
-import { DateTime } from 'luxon';
+import { Type } from 'class-transformer';
+import { IsDate } from 'class-validator';
 
 export class LecturesFilterParams {
     @ApiProperty({
         type: String,
     })
-    @IsDateString()
-    @Transform(({ value }) => DateTime.fromISO(value), {
-        toClassOnly: true,
-    })
-    @Transform(({ value }) => value.toISO(), {
-        toClassOnly: true,
-    })
-    startAt: DateTime;
+    @IsDate()
+    @Type(() => Date)
+    startAt: Date;
 
     @ApiProperty({
         type: String,
     })
-    @IsDateString()
-    @Transform(({ value }) => DateTime.fromISO(value), {
-        toClassOnly: true,
-    })
-    @Transform(({ value }) => value.toISO(), {
-        toClassOnly: true,
-    })
-    endAt: DateTime;
+    @IsDate()
+    @Type(() => Date)
+    endAt: Date;
 }

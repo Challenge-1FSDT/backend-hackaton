@@ -4,17 +4,18 @@ import {
     NotFoundException,
     UnauthorizedException,
 } from '@nestjs/common';
-import { AttendanceRepository } from '../repositories/attendance.repository';
-import { AppLogger } from '../../shared/logger/logger.service';
-import { Attendance } from '../entities/attendance.entity';
-import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
-import { LectureService } from '../../lecture/services/lecture.service';
-import { DateTime } from 'luxon';
 import { plainToInstance } from 'class-transformer';
-import { Actor } from '../../shared/acl/actor.constant';
-import { AttendanceAclService } from './attendanceAcl.service';
+import { DateTime } from 'luxon';
+
 import { ERole } from '../../auth/constants/role.constant';
+import { LectureService } from '../../lecture/services/lecture.service';
 import { Action } from '../../shared/acl/action.constant';
+import { Actor } from '../../shared/acl/actor.constant';
+import { AppLogger } from '../../shared/logger/logger.service';
+import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
+import { Attendance } from '../entities/attendance.entity';
+import { AttendanceRepository } from '../repositories/attendance.repository';
+import { AttendanceAclService } from './attendanceAcl.service';
 
 @Injectable()
 export class AttendanceService {
@@ -28,18 +29,23 @@ export class AttendanceService {
     }
 
     public async getAttendanceList(
-        ctx: AuthenticatedRequestContext,
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
         lectureId: number,
         limit: number,
         offset: number,
     ): Promise<{ attendances: Attendance[]; count: number }> {
         this.logger.log(ctx, `${this.getAttendanceList.name} was called`);
 
-        const lecture = await this.lectureService.getLecture(ctx, lectureId);
+        const lecture = await this.lectureService.getLecture(
+            ctx,
+            schoolId,
+            lectureId,
+        );
         const [attendances, count] = await this.repository.findAndCount({
             where: {
-                school: { id: ctx.schoolId! },
-                lecture: { id: lectureId },
+                school: { id: schoolId },
+                lecture: { id: lecture.id },
             },
             take: limit,
             skip: offset,
@@ -49,19 +55,27 @@ export class AttendanceService {
     }
 
     public async getAttendance(
-        ctx: AuthenticatedRequestContext,
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
         lectureId: number,
-        studentId: number,
+        userId: number,
     ): Promise<Attendance> {
         this.logger.log(ctx, `${this.getAttendance.name} was called`);
 
-        const lecture = await this.lectureService.getLecture(ctx, lectureId);
+        const lecture = await this.lectureService.getLecture(
+            ctx,
+            schoolId,
+            lectureId,
+        );
         const attendance = await this.repository.findOne({
             where: {
-                school: { id: ctx.schoolId! },
-                lecture: { id: lectureId },
-                student: { id: studentId },
+                school: { id: schoolId },
+                lecture: { id: lecture.id },
+                student: {
+                    user: { id: userId },
+                },
             },
+            relations: ['student.user'],
         });
         if (!attendance) {
             throw new NotFoundException();
@@ -81,24 +95,30 @@ export class AttendanceService {
     }
 
     public async createOrUpdateAttendance(
-        ctx: AuthenticatedRequestContext,
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
         lectureId: number,
-        studentId: number,
+        userId: number,
     ) {
         this.logger.log(
             ctx,
             `${this.createOrUpdateAttendance.name} was called`,
         );
 
-        const lecture = await this.lectureService.getLecture(ctx, lectureId);
+        const lecture = await this.lectureService.getLecture(
+            ctx,
+            schoolId,
+            lectureId,
+        );
 
         const now = new Date();
         let attendance = await this.repository.findOne({
             where: {
-                school: { id: ctx.schoolId! },
+                school: { id: schoolId },
                 lecture: { id: lectureId },
-                student: { id: studentId },
+                student: { user: { id: userId } },
             },
+            relations: ['student.user'],
         });
 
         const startDiff = DateTime.fromJSDate(lecture.startAt)
@@ -118,8 +138,8 @@ export class AttendanceService {
             startDiff <= 10
         ) {
             const create = plainToInstance(Attendance, {
-                school: { id: ctx.schoolId! },
-                student: { id: studentId },
+                school: { id: schoolId },
+                student: { id: userId },
                 lecture: { id: lectureId },
                 startAt: now,
             });

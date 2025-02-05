@@ -6,15 +6,15 @@ import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { User } from '../../user/entities/user.entity';
 import { UserService } from '../../user/services/user.service';
+import { CommentOutput } from '../dtos/comment-output.dto';
 import {
     CreateCommentInput,
     UpdateArticleInput,
-} from '../dtos/article-input.dto';
-import { CommentOutput } from '../dtos/comment-output.dto';
-import { Article } from '../entities/article.entity';
-import { ArticleRepository } from '../repositories/article.repository';
-import { CommentService } from './comment.service';
+} from '../dtos/create-comment-input.dto';
+import { Comments } from '../entities/comment.entity';
+import { CommentRepository } from '../repositories/comment.repository';
 import { ArticleAclService } from './article-acl.service';
+import { CommentService } from './comment.service';
 
 describe('ArticleService', () => {
     let service: CommentService;
@@ -27,7 +27,7 @@ describe('ArticleService', () => {
             providers: [
                 CommentService,
                 {
-                    provide: ArticleRepository,
+                    provide: CommentRepository,
                     useValue: {
                         save: jest.fn(),
                         findOne: jest.fn(),
@@ -51,7 +51,7 @@ describe('ArticleService', () => {
         }).compile();
 
         service = moduleRef.get<CommentService>(CommentService);
-        mockedRepository = moduleRef.get(ArticleRepository);
+        mockedRepository = moduleRef.get(CommentRepository);
         mockedUserService = moduleRef.get(UserService);
     });
 
@@ -285,7 +285,7 @@ describe('ArticleService', () => {
 
             const author = new User();
             author.id = 1;
-            const foundArticle = new Article();
+            const foundArticle = new Comments();
             foundArticle.id = articleId;
             foundArticle.author = author;
 

@@ -13,6 +13,7 @@ import { SchoolModule } from './school/school.module';
 import { SchoolMemberModule } from './schoolMember/schoolMember.module';
 import { SharedModule } from './shared/shared.module';
 import { SubjectModule } from './subject/subject.module';
+import { SubjectTeacherModule } from './subject-teacher/subject-teacher.module';
 import { UserModule } from './user/user.module';
 
 @Module({
@@ -29,6 +30,7 @@ import { UserModule } from './user/user.module';
         SchoolModule,
         SchoolMemberModule,
         SubjectModule,
+        SubjectTeacherModule,
     ],
     controllers: [AppController],
     providers: [AppService],

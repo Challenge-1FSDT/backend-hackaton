@@ -151,11 +151,10 @@ export class ClassController {
     @UseInterceptors(ClassSerializerInterceptor)
     @Delete(':classId')
     @ApiOperation({
-        summary: 'Create a class',
+        summary: 'Delete a class',
     })
     @ApiResponse({
-        status: HttpStatus.CREATED,
-        type: SwaggerBaseApiResponse(ClassOutput),
+        status: HttpStatus.OK,
     })
     @ApiResponse({
         status: HttpStatus.UNAUTHORIZED,

@@ -1,11 +1,11 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Class } from '../../class/entities/class.entity';
 import { School } from '../../school/entities/school.entity';
 import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { Subject } from '../../subject/entities/subject.entity';
 
-@Entity('class_students')
-export class ClassStudent {
+@Entity('subject_teachers')
+export class SubjectTeacher {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -13,16 +13,13 @@ export class ClassStudent {
     @JoinColumn()
     school: School;
 
-    @ManyToOne(() => Class, (classEntity) => classEntity.classStudents, {
+    @ManyToOne(() => Subject, (subject) => subject.subjectTeachers, {
         nullable: false,
     })
     @JoinColumn()
-    class: Class;
+    subject: Subject;
 
-    @ManyToOne(
-        () => SchoolMember,
-        { nullable: false },
-    )
+    @ManyToOne(() => SchoolMember, { nullable: false })
     @JoinColumn()
     schoolMember: SchoolMember;
 }

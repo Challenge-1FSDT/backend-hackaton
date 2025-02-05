@@ -55,7 +55,7 @@ export class CreateSchoolMemberInput {
         toClassOnly: true,
     })
     @Transform(({ value }) => value.toISO(), {
-        toClassOnly: true,
+        toPlainOnly: true,
     })
     dateOfBirth: DateTime;
 

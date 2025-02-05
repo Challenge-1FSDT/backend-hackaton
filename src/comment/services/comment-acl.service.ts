@@ -4,10 +4,10 @@ import { ERole } from '../../auth/constants/role.constant';
 import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
-import { Article } from '../entities/article.entity';
+import { Comments } from '../entities/comment.entity';
 
 @Injectable()
-export class ArticleAclService extends BaseAclService<ERole, Article> {
+export class ArticleAclService extends BaseAclService<ERole, Comments> {
     constructor() {
         super();
         this.canDo(ERole.ADMIN, [Action.Manage]);
@@ -19,7 +19,7 @@ export class ArticleAclService extends BaseAclService<ERole, Article> {
         );
     }
 
-    isArticleAuthor(article: Article, user: Actor): boolean {
+    isArticleAuthor(article: Comments, user: Actor): boolean {
         return article.author.id === user.id;
     }
 }

@@ -30,11 +30,11 @@ import {
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
-import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
+import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { AttendanceOutput } from '../dtos/attendance-output.dto';
 import { AttendanceService } from '../services/attendance.service';
 
-@ApiTags('lectures', 'attendances')
+@ApiTags('lectures', 'lecture attendances')
 @Controller('lectures/:lectureId/attendances')
 export class AttendanceController {
     constructor(
@@ -65,7 +65,7 @@ export class AttendanceController {
     @SchoolRoles(ESchoolRole.ADMIN, ESchoolRole.FACULTY, ESchoolRole.TEACHER)
     @ApiBearerAuth()
     public async getAttendanceList(
-        @ReqContext() ctx: AuthenticatedRequestContext,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
         @Param('lectureId', ParseIntPipe) lectureId: number,
         @Query() query: PaginationParamsDto,
     ): Promise<BaseApiResponse<AttendanceOutput[]>> {
@@ -74,6 +74,7 @@ export class AttendanceController {
         const { attendances, count } =
             await this.attendanceService.getAttendanceList(
                 ctx,
+                ctx.schoolId,
                 lectureId,
                 query.limit,
                 query.offset,
@@ -116,7 +117,7 @@ export class AttendanceController {
     )
     @ApiBearerAuth()
     public async getAttendance(
-        @ReqContext() ctx: AuthenticatedRequestContext,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
         @Param('lectureId', ParseIntPipe) lectureId: number,
         @Param('studentId', ParseIntPipe) studentId: number,
     ): Promise<BaseApiResponse<AttendanceOutput>> {
@@ -124,6 +125,7 @@ export class AttendanceController {
 
         const attendance = await this.attendanceService.getAttendance(
             ctx,
+            ctx.schoolId,
             lectureId,
             studentId,
         );
@@ -156,7 +158,7 @@ export class AttendanceController {
     @SchoolRoles(ESchoolRole.STUDENT)
     @ApiBearerAuth()
     public async postAttendance(
-        @ReqContext() ctx: AuthenticatedRequestContext,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
         @Param('lectureId', ParseIntPipe) lectureId: number,
     ): Promise<BaseApiResponse<AttendanceOutput>> {
         this.logger.log(ctx, `${this.getAttendanceList.name} was called`);
@@ -164,8 +166,9 @@ export class AttendanceController {
         const attendance =
             await this.attendanceService.createOrUpdateAttendance(
                 ctx,
+                ctx.schoolId,
                 lectureId,
-                ctx.user.schoolMember?.id!,
+                ctx.user.id,
             );
 
         const attendanceOutput = plainToInstance(AttendanceOutput, attendance, {

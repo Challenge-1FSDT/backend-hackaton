@@ -9,7 +9,11 @@ import { AuthenticatedRequestContext } from '../../shared/request-context/reques
 import { School } from '../entities/school.entity';
 
 @Injectable()
-export class SchoolAclService extends BaseAclService<ERole, School> {
+export class SchoolAclService extends BaseAclService<
+    ERole,
+    School,
+    AuthenticatedRequestContext
+> {
     constructor(public readonly schoolMemberService: SchoolMemberService) {
         super();
         this.canDo(ERole.ADMIN, [Action.Manage]);

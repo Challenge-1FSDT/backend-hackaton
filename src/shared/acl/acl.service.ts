@@ -1,13 +1,24 @@
-import { AuthenticatedRequestContext } from '../request-context/request-context.dto';
+import {
+    AuthenticatedRequestContext,
+    RequestContext,
+    SchoolAuthenticatedRequestContext,
+} from '../request-context/request-context.dto';
 import { AclRule, RuleCallback } from './acl-rule.constant';
 import { Action } from './action.constant';
 import { Actor } from './actor.constant';
 
-export class BaseAclService<RoleEnum, Resource> {
+export class BaseAclService<
+    RoleEnum,
+    Resource,
+    CtxType extends
+        | SchoolAuthenticatedRequestContext
+        | AuthenticatedRequestContext
+        | RequestContext = RequestContext,
+> {
     /**
      * ACL rules
      */
-    protected aclRules: AclRule<RoleEnum, Resource>[] = [];
+    protected aclRules: AclRule<RoleEnum, Resource, CtxType>[] = [];
 
     /**
      * Set ACL rule for a role
@@ -15,7 +26,7 @@ export class BaseAclService<RoleEnum, Resource> {
     protected canDo(
         role: RoleEnum,
         actions: Action[],
-        ...ruleCallback: RuleCallback<Resource>[]
+        ...ruleCallback: RuleCallback<Resource, CtxType>[]
     ): void {
         this.aclRules.push({
             role,
@@ -28,9 +39,9 @@ export class BaseAclService<RoleEnum, Resource> {
      * create user specific acl object to check ability to perform any action
      */
     public forActor = (actor: Actor) => {
-        let ctx: AuthenticatedRequestContext | undefined;
+        let ctx: CtxType | undefined;
         const api = {
-            withContext: (context: AuthenticatedRequestContext) => {
+            withContext: (context: CtxType) => {
                 ctx = context;
                 return api;
             },

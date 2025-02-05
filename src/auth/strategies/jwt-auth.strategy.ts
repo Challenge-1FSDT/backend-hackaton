@@ -10,6 +10,7 @@ import { SchoolMemberService } from '../../schoolMember/services/schoolMember.se
 import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { createRequestContext } from '../../shared/request-context/util';
 import { UserService } from '../../user/services/user.service';
+import { ERole } from '../constants/role.constant';
 import { STRATEGY_JWT_AUTH } from '../constants/strategy.constant';
 import { UserAccessTokenClaims } from '../dtos/auth-token-output.dto';
 
@@ -41,10 +42,22 @@ export class JwtAuthStrategy extends PassportStrategy(
     // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     async validate(req: Request, payload: any): Promise<UserAccessTokenClaims> {
         const context = createRequestContext(req);
+
+        const user = await this.userService.getUserById(context, payload.sub);
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+
         let schoolMemberClaims: SchoolMemberClaims | null = null;
-        if (context.schoolId && 'user' in context) {
+        if (context.schoolId) {
             const schoolMember = await this.schoolMemberService.getSchoolMember(
-                context as AuthenticatedRequestContext,
+                {
+                    ...context,
+                    user: {
+                        ...user,
+                        role: ERole.ADMIN,
+                    },
+                } as AuthenticatedRequestContext,
                 context.schoolId,
                 payload.sub,
             );
@@ -55,11 +68,6 @@ export class JwtAuthStrategy extends PassportStrategy(
                     excludeExtraneousValues: true,
                 },
             );
-        }
-
-        const user = await this.userService.getUserById(context, payload.sub);
-        if (!user) {
-            throw new UnauthorizedException();
         }
 
         // Passport automatically creates a user object, based on the value we return from the validate() method,
