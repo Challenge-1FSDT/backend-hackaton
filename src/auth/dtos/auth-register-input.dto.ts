@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
-    IsDateString,
+    IsDate,
     IsEmail,
     IsNotEmpty,
     IsOptional,
@@ -11,7 +11,6 @@ import {
     Length,
     MaxLength,
 } from 'class-validator';
-import { DateTime } from 'luxon';
 
 import { IsCPF } from '../../shared/validators/isCPF';
 
@@ -51,14 +50,9 @@ export class RegisterInput {
 
     @ApiProperty()
     @IsNotEmpty()
-    @IsDateString()
-    @Transform(({ value }) => DateTime.fromISO(value), {
-        toClassOnly: true,
-    })
-    @Transform(({ value }) => value.toISO(), {
-        toPlainOnly: true,
-    })
-    dateOfBirth: DateTime;
+    @IsDate()
+    @Type(() => Date)
+    dateOfBirth: Date;
 
     @ApiProperty()
     @IsNotEmpty()

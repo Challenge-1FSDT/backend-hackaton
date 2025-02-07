@@ -1,6 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { compare, hash } from 'bcrypt';
 import { plainToClass, plainToInstance } from 'class-transformer';
+import { DateTime } from 'luxon';
 
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
@@ -28,7 +29,8 @@ export class UserService {
         const user = plainToClass(User, input);
 
         user.password = await hash(
-            input.password ?? input.dateOfBirth.toFormat('ddMMyyyy'),
+            input.password ??
+                DateTime.fromJSDate(input.dateOfBirth).toFormat('ddMMyyyy'),
             10,
         );
 

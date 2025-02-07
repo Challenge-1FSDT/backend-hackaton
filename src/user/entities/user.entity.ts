@@ -9,8 +9,8 @@ import {
     UpdateDateColumn,
 } from 'typeorm';
 
-import { Article } from '../../article/entities/article.entity';
 import { ERole } from '../../auth/constants/role.constant';
+import { Comment } from '../../comment/entities/comment.entity';
 import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
 
 @Entity('users')
@@ -51,8 +51,8 @@ export class User {
     isDisabled: boolean;
 
     // * Relations
-    @OneToMany(() => Article, (article) => article.author)
-    articles: Article[];
+    @OneToMany(() => Comment, (article) => article.author)
+    articles: Comment[];
 
     @OneToMany(() => SchoolMember, (schoolMember) => schoolMember.user)
     memberships: SchoolMember[];

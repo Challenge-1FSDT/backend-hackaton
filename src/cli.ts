@@ -1,6 +1,5 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { DateTime } from 'luxon';
 
 import { AppModule } from './app.module';
 import { ERole } from './auth/constants/role.constant';
@@ -21,7 +20,7 @@ async function bootstrap() {
     const defaultAdmin: CreateUserInput = {
         firstName: 'Default Admin',
         password: defaultAdminUserPassword,
-        dateOfBirth: DateTime.now(),
+        dateOfBirth: new Date(),
         role: ERole.ADMIN,
         email: 'default@admin.com',
     };

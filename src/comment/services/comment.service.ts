@@ -1,67 +1,69 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { plainToClass } from 'class-transformer';
+import {
+    Injectable,
+    NotFoundException,
+    UnauthorizedException,
+} from '@nestjs/common';
+import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
 
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
-import { AppLogger } from '../../shared/logger/logger.service';
-import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
-import { User } from '../../user/entities/user.entity';
-import { UserService } from '../../user/services/user.service';
 import {
-    CreateCommentInput,
-    UpdateArticleInput,
-} from '../dtos/article-input.dto';
-import { CommentOutput } from '../dtos/comment-output.dto';
-import { Article } from '../entities/article.entity';
-import { ArticleRepository } from '../repositories/article.repository';
-import { ArticleAclService } from './article-acl.service';
+    PaginatedResult,
+    PaginationParamsDto,
+} from '../../shared/dtos/pagination-params.dto';
+import { AppLogger } from '../../shared/logger/logger.service';
+import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
+import { CreateCommentInput } from '../dtos/create-comment-input.dto';
+import { UpdateCommentInput } from '../dtos/update-comment-input.dto';
+import { Comment } from '../entities/comment.entity';
+import { CommentRepository } from '../repositories/comment.repository';
+import { CommentAclService } from './comment-acl.service';
 
 @Injectable()
 export class CommentService {
     constructor(
-        private repository: ArticleRepository,
-        private userService: UserService,
-        private aclService: ArticleAclService,
+        private repository: CommentRepository,
+        private aclService: CommentAclService,
         private readonly logger: AppLogger,
     ) {
         this.logger.setContext(CommentService.name);
     }
 
-    async createArticle(
-        ctx: AuthenticatedRequestContext,
+    async create(
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
+        lectureId: number,
         input: CreateCommentInput,
-    ): Promise<CommentOutput> {
-        this.logger.log(ctx, `${this.createArticle.name} was called`);
+    ): Promise<Comment> {
+        this.logger.log(ctx, `${this.create.name} was called`);
 
-        const article = plainToClass(Article, input);
-
-        const actor: Actor = ctx.user!;
-
-        const user = await this.userService.getUserById(ctx, actor.id);
-
+        const actor: Actor = ctx.user.schoolMember!;
         const isAllowed = this.aclService
             .forActor(actor)
-            .canDoAction(Action.Create, article);
+            .canDoAction(Action.Create);
         if (!isAllowed) {
             throw new UnauthorizedException();
         }
 
-        article.author = plainToClass(User, user);
-
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.save`);
-        const savedArticle = await this.repository.save(article);
-
-        return plainToClass(CommentOutput, savedArticle, {
-            excludeExtraneousValues: true,
+        this.logger.log(ctx, `calling ${CommentRepository.name}.save`);
+        const comment = await this.repository.save({
+            ...input,
+            author: ctx.user.schoolMember,
+            school: { id: schoolId },
+            lecture: { id: lectureId },
         });
+
+        return comment;
     }
 
-    async getArticles(
-        ctx: AuthenticatedRequestContext,
-        limit: number,
-        offset: number,
-    ): Promise<{ articles: CommentOutput[]; count: number }> {
-        this.logger.log(ctx, `${this.getArticles.name} was called`);
+    async getPaged(
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
+        where: FindOptionsWhere<Comment>,
+        pagination: PaginationParamsDto,
+        relations: FindOptionsRelations<Comment>,
+    ): Promise<PaginatedResult<Comment>> {
+        this.logger.log(ctx, `${this.getPaged.name} was called`);
 
         const actor: Actor = ctx.user!;
 
@@ -72,31 +74,40 @@ export class CommentService {
             throw new UnauthorizedException();
         }
 
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.findAndCount`);
-        const [articles, count] = await this.repository.findAndCount({
-            where: {},
-            take: limit,
-            skip: offset,
+        this.logger.log(ctx, `calling ${CommentRepository.name}.findAndCount`);
+        const [data, count] = await this.repository.findAndCount({
+            where: {
+                ...where,
+                school: { id: schoolId },
+            },
+            take: pagination.limit,
+            skip: pagination.offset,
+            relations,
         });
 
-        const articlesOutput = plainToClass(CommentOutput, articles, {
-            excludeExtraneousValues: true,
-        });
-
-        return { articles: articlesOutput, count };
+        return { data, count };
     }
 
-    async getArticleById(
-        ctx: AuthenticatedRequestContext,
-        id: number,
-    ): Promise<CommentOutput> {
-        this.logger.log(ctx, `${this.getArticleById.name} was called`);
+    async getOne(
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
+        where: FindOptionsWhere<Comment>,
+        relations: FindOptionsRelations<Comment>,
+    ): Promise<Comment> {
+        this.logger.log(ctx, `${this.getOne.name} was called`);
 
-        const actor: Actor = ctx.user!;
+        const article = await this.repository.findOne({
+            where: {
+                ...where,
+                school: { id: schoolId },
+            },
+            relations,
+        });
+        if (!article) {
+            throw new NotFoundException();
+        }
 
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.getById`);
-        const article = await this.repository.getById(id);
-
+        const actor: Actor = ctx.user.schoolMember!;
         const isAllowed = await this.aclService
             .forActor(actor)
             .canDoAction(Action.Read, article);
@@ -104,23 +115,28 @@ export class CommentService {
             throw new UnauthorizedException();
         }
 
-        return plainToClass(CommentOutput, article, {
-            excludeExtraneousValues: true,
-        });
+        return article;
     }
 
-    async updateArticle(
-        ctx: AuthenticatedRequestContext,
-        articleId: number,
-        input: UpdateArticleInput,
-    ): Promise<CommentOutput> {
-        this.logger.log(ctx, `${this.updateArticle.name} was called`);
+    async update(
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
+        where: FindOptionsWhere<Comment>,
+        input: UpdateCommentInput,
+    ): Promise<Comment> {
+        this.logger.log(ctx, `${this.update.name} was called`);
 
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.getById`);
-        const article = await this.repository.getById(articleId);
+        const article = await this.repository.findOne({
+            where: {
+                ...where,
+                school: { id: schoolId },
+            },
+        });
+        if (!article) {
+            throw new NotFoundException();
+        }
 
-        const actor: Actor = ctx.user!;
-
+        const actor: Actor = ctx.user.schoolMember!;
         const isAllowed = this.aclService
             .forActor(actor)
             .canDoAction(Action.Update, article);
@@ -128,38 +144,43 @@ export class CommentService {
             throw new UnauthorizedException();
         }
 
-        const updatedArticle: Article = {
+        const updatedArticle: Comment = {
             ...article,
             ...input,
         };
 
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.save`);
-        const savedArticle = await this.repository.save(updatedArticle);
+        this.logger.log(ctx, `calling ${CommentRepository.name}.save`);
+        const updated = await this.repository.save(updatedArticle);
 
-        return plainToClass(CommentOutput, savedArticle, {
-            excludeExtraneousValues: true,
-        });
+        return updated;
     }
 
-    async deleteArticle(
-        ctx: AuthenticatedRequestContext,
-        id: number,
+    async delete(
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
+        where: FindOptionsWhere<Comment>,
     ): Promise<void> {
-        this.logger.log(ctx, `${this.deleteArticle.name} was called`);
+        this.logger.log(ctx, `${this.delete.name} was called`);
 
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.getById`);
-        const article = await this.repository.getById(id);
+        const comment = await this.repository.findOne({
+            where: {
+                ...where,
+                school: { id: schoolId },
+            },
+        });
+        if (!comment) {
+            throw new NotFoundException();
+        }
 
-        const actor: Actor = ctx.user!;
-
+        const actor: Actor = ctx.user.schoolMember!;
         const isAllowed = this.aclService
             .forActor(actor)
-            .canDoAction(Action.Delete, article);
+            .canDoAction(Action.Delete, comment);
         if (!isAllowed) {
             throw new UnauthorizedException();
         }
 
-        this.logger.log(ctx, `calling ${ArticleRepository.name}.remove`);
-        await this.repository.remove(article);
+        this.logger.log(ctx, `calling ${CommentRepository.name}.remove`);
+        await this.repository.softRemove(comment);
     }
 }

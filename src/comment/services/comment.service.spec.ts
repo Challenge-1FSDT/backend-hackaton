@@ -11,10 +11,10 @@ import {
     CreateCommentInput,
     UpdateArticleInput,
 } from '../dtos/create-comment-input.dto';
-import { Comments } from '../entities/comment.entity';
+import { Comment } from '../entities/comment.entity';
 import { CommentRepository } from '../repositories/comment.repository';
-import { ArticleAclService } from './article-acl.service';
 import { CommentService } from './comment.service';
+import { CommentAclService } from './comment-acl.service';
 
 describe('ArticleService', () => {
     let service: CommentService;
@@ -43,8 +43,8 @@ describe('ArticleService', () => {
                     },
                 },
                 {
-                    provide: ArticleAclService,
-                    useValue: new ArticleAclService(),
+                    provide: CommentAclService,
+                    useValue: new CommentAclService(),
                 },
                 { provide: AppLogger, useValue: mockedLogger },
             ],
@@ -69,7 +69,7 @@ describe('ArticleService', () => {
                 username: 'testuser',
             };
 
-            service.createArticle(ctx, new CreateCommentInput());
+            service.create(ctx, new CreateCommentInput());
             expect(mockedUserService.getUserById).toHaveBeenCalledWith(ctx, 1);
         });
 
@@ -101,7 +101,7 @@ describe('ArticleService', () => {
             };
             mockedRepository.save.mockResolvedValue(expectedOutput);
 
-            const output = await service.createArticle(ctx, articleInput);
+            const output = await service.create(ctx, articleInput);
             expect(mockedRepository.save).toHaveBeenCalledWith(expected);
             expect(output).toEqual(expectedOutput);
         });
@@ -129,7 +129,7 @@ describe('ArticleService', () => {
                 expectedOutput.length,
             ]);
 
-            expect(await service.getArticles(ctx, limit, offset)).toEqual({
+            expect(await service.getPaged(ctx, limit, offset)).toEqual({
                 articles: expectedOutput,
                 count: expectedOutput.length,
             });
@@ -143,7 +143,7 @@ describe('ArticleService', () => {
                 expectedOutput.length,
             ]);
 
-            expect(await service.getArticles(ctx, limit, offset)).toEqual({
+            expect(await service.getPaged(ctx, limit, offset)).toEqual({
                 articles: expectedOutput,
                 count: expectedOutput.length,
             });
@@ -166,9 +166,7 @@ describe('ArticleService', () => {
 
             mockedRepository.getById.mockResolvedValue(expectedOutput);
 
-            expect(await service.getArticleById(ctx, id)).toEqual(
-                expectedOutput,
-            );
+            expect(await service.getOne(ctx, id)).toEqual(expectedOutput);
         });
 
         it('should fail when article is not found and return the repository error', async () => {
@@ -179,7 +177,7 @@ describe('ArticleService', () => {
             });
 
             try {
-                await service.getArticleById(ctx, id);
+                await service.getOne(ctx, id);
             } catch (error: any) {
                 expect(error.message).toEqual('error');
             }
@@ -208,7 +206,7 @@ describe('ArticleService', () => {
                 author,
             });
 
-            service.updateArticle(ctx, articleId, input);
+            service.update(ctx, articleId, input);
             expect(mockedRepository.getById).toHaveBeenCalledWith(articleId);
         });
 
@@ -239,7 +237,7 @@ describe('ArticleService', () => {
                 post: 'New Post',
                 author,
             };
-            await service.updateArticle(ctx, articleId, input);
+            await service.update(ctx, articleId, input);
             expect(mockedRepository.save).toHaveBeenCalledWith(expected);
         });
 
@@ -265,7 +263,7 @@ describe('ArticleService', () => {
             });
 
             try {
-                await service.updateArticle(ctx, articleId, input);
+                await service.update(ctx, articleId, input);
             } catch (error: any) {
                 expect(error.constructor).toEqual(UnauthorizedException);
                 expect(mockedRepository.save).not.toHaveBeenCalled();
@@ -285,20 +283,20 @@ describe('ArticleService', () => {
 
             const author = new User();
             author.id = 1;
-            const foundArticle = new Comments();
+            const foundArticle = new Comment();
             foundArticle.id = articleId;
             foundArticle.author = author;
 
             mockedRepository.getById.mockResolvedValue(foundArticle);
 
-            await service.deleteArticle(ctx, articleId);
+            await service.delete(ctx, articleId);
             expect(mockedRepository.remove).toHaveBeenCalledWith(foundArticle);
         });
 
         it('should throw not found exception if article not found', async () => {
             mockedRepository.getById.mockRejectedValue(new NotFoundException());
             try {
-                await service.deleteArticle(ctx, articleId);
+                await service.delete(ctx, articleId);
             } catch (error: any) {
                 expect(error).toBeInstanceOf(NotFoundException);
             }
@@ -323,7 +321,7 @@ describe('ArticleService', () => {
             });
 
             try {
-                await service.deleteArticle(ctx, articleId);
+                await service.delete(ctx, articleId);
             } catch (error: any) {
                 expect(error.constructor).toEqual(UnauthorizedException);
                 expect(mockedRepository.save).not.toHaveBeenCalled();

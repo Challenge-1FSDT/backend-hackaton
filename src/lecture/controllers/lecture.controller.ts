@@ -69,8 +69,7 @@ export class LectureController {
     @ApiBearerAuth()
     async getPaged(
         @ReqContext() ctx: SchoolAuthenticatedRequestContext,
-        @Query() query: PaginationParamsDto,
-        @Body() body: LecturesFilterParams,
+        @Query() query: PaginationParamsDto & LecturesFilterParams,
     ): Promise<BaseApiResponse<LectureOutput[]>> {
         this.logger.log(ctx, `${this.getPaged.name} was called`);
 
@@ -78,8 +77,8 @@ export class LectureController {
             ctx,
             ctx.schoolId,
             {
-                startAt: Between(body.startAt, body.endAt),
-                endAt: Between(body.startAt, body.endAt),
+                startAt: Between(query.startAt, query.endAt),
+                endAt: Between(query.startAt, query.endAt),
             },
             { limit: query.limit, offset: query.offset },
         );

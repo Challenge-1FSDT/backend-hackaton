@@ -1,16 +1,21 @@
 import {
     Column,
     CreateDateColumn,
+    DeleteDateColumn,
     Entity,
+    JoinColumn,
     ManyToOne,
+    OneToMany,
     PrimaryGeneratedColumn,
     UpdateDateColumn,
 } from 'typeorm';
 
-import { User } from '../../user/entities/user.entity';
+import { Lecture } from '../../lecture/entities/lecture.entity';
+import { School } from '../../school/entities/school.entity';
+import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
 
-@Entity('articles')
-export class Article {
+@Entity('comments')
+export class Comment {
     @PrimaryGeneratedColumn()
     id: number;
 
@@ -20,15 +25,33 @@ export class Article {
     @Column()
     post: string;
 
-    @CreateDateColumn({ name: 'createdAt' })
+    // * Relations
+    @ManyToOne(() => School, { nullable: false })
+    @JoinColumn()
+    school: School;
+
+    @ManyToOne(() => Lecture, { nullable: false })
+    @JoinColumn()
+    lecture: Lecture;
+
+    @ManyToOne(() => Comment, (comment) => comment.children, { nullable: true })
+    @JoinColumn()
+    parent: Comment;
+
+    @OneToMany(() => Comment, (comment) => comment.parent)
+    children: Comment[];
+
+    @ManyToOne(() => SchoolMember, { eager: true, nullable: false })
+    @JoinColumn()
+    author: SchoolMember;
+
+    // * Timestamps
+    @CreateDateColumn()
     createdAt: Date;
 
-    @UpdateDateColumn({ name: 'updatedAt' })
+    @UpdateDateColumn()
     updatedAt: Date;
 
-    @ManyToOne(() => User, (user) => user.articles, {
-        eager: true,
-        nullable: false,
-    })
-    author: User;
+    @DeleteDateColumn({ name: 'deletedAt', nullable: true })
+    deletedAt?: Date;
 }

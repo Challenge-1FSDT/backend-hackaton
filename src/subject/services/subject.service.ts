@@ -8,7 +8,6 @@ import { Actor } from 'src/shared/acl/actor.constant';
 import { DeepPartial, FindOptionsWhere } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
 import { Action } from '../../shared/acl/action.constant';
 import {
     PaginatedResult,
@@ -58,22 +57,6 @@ export class SubjectService {
                 school: {
                     id: schoolId!,
                 },
-                ...(ctx.user.schoolMember?.role === ESchoolRole.TEACHER && {
-                    subjectTeachers: {
-                        schoolMember: {
-                            id: ctx.user.schoolMember.id,
-                        },
-                    },
-                }),
-                ...(ctx.user.schoolMember?.role === ESchoolRole.STUDENT && {
-                    class: {
-                        classStudents: {
-                            schoolMember: {
-                                id: ctx.user.schoolMember!.id,
-                            },
-                        },
-                    },
-                }),
             },
             take: pagination.limit,
             skip: pagination.offset,

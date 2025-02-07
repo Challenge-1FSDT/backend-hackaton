@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
@@ -13,7 +13,7 @@ import { UserAclService } from './services/user-acl.service';
     imports: [
         SharedModule,
         TypeOrmModule.forFeature([User]),
-        SchoolMemberModule,
+        forwardRef(() => SchoolMemberModule),
     ],
     providers: [UserService, UserAclService, UserRepository],
     controllers: [UserController],

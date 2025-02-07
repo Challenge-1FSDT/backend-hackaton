@@ -5,7 +5,6 @@ import {
     UnprocessableEntityException,
 } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
-import { DateTime } from 'luxon';
 
 import { ERole } from '../../auth/constants/role.constant';
 import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
@@ -110,7 +109,7 @@ export class SchoolService {
             email: user.email,
             phone: user.phone,
             taxId: user.taxId,
-            dateOfBirth: DateTime.fromJSDate(user.dateOfBirth),
+            dateOfBirth: user.dateOfBirth,
             role: ESchoolRole.ADMIN,
         });
 

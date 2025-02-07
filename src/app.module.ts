@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ArticleModule } from './article/article.module';
 import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
 import { ClassModule } from './class/class.module';
 import { ClassStudentModule } from './class-student/class-student.module';
 import { ClassroomModule } from './classroom/classroom.module';
+import { ArticleModule } from './comment/article.module';
 import { LectureModule } from './lecture/lecture.module';
 import { SchoolModule } from './school/school.module';
 import { SchoolMemberModule } from './schoolMember/schoolMember.module';

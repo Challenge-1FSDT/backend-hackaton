@@ -3,11 +3,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DataSource } from 'typeorm';
 
 import { User } from '../../user/entities/user.entity';
-import { Article } from '../entities/article.entity';
-import { ArticleRepository } from './article.repository';
+import { Comment } from '../entities/comment.entity';
+import { CommentRepository } from './comment.repository';
 
 describe('ArticleRepository', () => {
-    let repository: ArticleRepository;
+    let repository: CommentRepository;
 
     let dataSource: {
         createEntityManager: jest.Mock;
@@ -20,7 +20,7 @@ describe('ArticleRepository', () => {
 
         const moduleRef: TestingModule = await Test.createTestingModule({
             providers: [
-                ArticleRepository,
+                CommentRepository,
                 {
                     provide: DataSource,
                     useValue: dataSource,
@@ -28,7 +28,7 @@ describe('ArticleRepository', () => {
             ],
         }).compile();
 
-        repository = moduleRef.get<ArticleRepository>(ArticleRepository);
+        repository = moduleRef.get<CommentRepository>(CommentRepository);
     });
 
     it('should be defined', () => {
@@ -39,7 +39,7 @@ describe('ArticleRepository', () => {
         it('should call findOne with correct id', () => {
             const id = 1;
 
-            jest.spyOn(repository, 'findOne').mockResolvedValue(new Article());
+            jest.spyOn(repository, 'findOne').mockResolvedValue(new Comment());
             repository.getById(id);
             expect(repository.findOne).toHaveBeenCalledWith({ where: { id } });
         });

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { Article } from '../../article/entities/article.entity';
+import { Comment } from '../../comment/entities/comment.entity';
 import { ERole } from './../../auth/constants/role.constant';
 import { BaseAclService } from './acl.service';
 import { RuleCallback } from './acl-rule.constant';
@@ -106,7 +106,7 @@ describe('AclService', () => {
             service.canDo(ERole.USER, [Action.Manage], customOwnerRule);
             const userAcl = service.forActor(user);
             expect(
-                userAcl.canDoAction(Action.Read, new Article()),
+                userAcl.canDoAction(Action.Read, new Comment()),
             ).toBeTruthy();
         });
 
@@ -115,7 +115,7 @@ describe('AclService', () => {
             customOwnerRule.mockReturnValue(false);
             service.canDo(ERole.USER, [Action.Manage], customOwnerRule);
             const userAcl = service.forActor(user);
-            expect(userAcl.canDoAction(Action.Read, new Article())).toBeFalsy();
+            expect(userAcl.canDoAction(Action.Read, new Comment())).toBeFalsy();
         });
     });
 });

@@ -3,9 +3,9 @@ import {
     ApiProperty,
     ApiPropertyOptional,
 } from '@nestjs/swagger';
-import { Transform } from 'class-transformer';
+import { Type } from 'class-transformer';
 import {
-    IsDateString,
+    IsDate,
     IsEmail,
     IsEnum,
     IsNotEmpty,
@@ -16,7 +16,6 @@ import {
     Length,
     MaxLength,
 } from 'class-validator';
-import { DateTime } from 'luxon';
 
 import { ERole } from '../../auth/constants/role.constant';
 import { IsCPF } from '../../shared/validators/isCPF';
@@ -56,14 +55,9 @@ export class CreateUserInput {
 
     @ApiPropertyOptional()
     @IsNotEmpty()
-    @IsDateString()
-    @Transform(({ value }) => DateTime.fromISO(value), {
-        toClassOnly: true,
-    })
-    @Transform(({ value }) => value.toISO(), {
-        toPlainOnly: true,
-    })
-    dateOfBirth: DateTime;
+    @IsDate()
+    @Type(() => Date)
+    dateOfBirth: Date;
 
     @ApiHideProperty()
     @IsOptional()

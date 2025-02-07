@@ -6,8 +6,8 @@ import {
     Get,
     HttpStatus,
     Param,
-    Patch,
     Post,
+    Put,
     Query,
     UseGuards,
     UseInterceptors,
@@ -18,8 +18,10 @@ import {
     ApiResponse,
     ApiTags,
 } from '@nestjs/swagger';
+import { plainToInstance } from 'class-transformer';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
+import { SchoolIdGuard } from '../../school/guards/school-id.guard';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,
@@ -28,16 +30,14 @@ import {
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';
-import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
-import {
-    CreateCommentInput,
-    UpdateArticleInput,
-} from '../dtos/article-input.dto';
+import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { CommentOutput } from '../dtos/comment-output.dto';
+import { CreateCommentInput } from '../dtos/create-comment-input.dto';
+import { UpdateCommentInput } from '../dtos/update-comment-input.dto';
 import { CommentService } from '../services/comment.service';
 
-@ApiTags('comments')
-@Controller('comments')
+@ApiTags('lectures', 'lecture comments')
+@Controller('lectures/:lectureId/comments')
 export class CommentController {
     constructor(
         private readonly commentService: CommentService,
@@ -56,13 +56,24 @@ export class CommentController {
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, SchoolIdGuard)
     async createArticle(
-        @ReqContext() ctx: AuthenticatedRequestContext,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
+        @Param('lectureId') lectureId: number,
         @Body() input: CreateCommentInput,
     ): Promise<BaseApiResponse<CommentOutput>> {
-        const article = await this.commentService.createArticle(ctx, input);
-        return { data: article, meta: {} };
+        const article = await this.commentService.create(
+            ctx,
+            ctx.schoolId,
+            lectureId,
+            input,
+        );
+
+        const output = plainToInstance(CommentOutput, article, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: output, meta: {} };
     }
 
     @Get()
@@ -75,23 +86,30 @@ export class CommentController {
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, SchoolIdGuard)
     async getComments(
-        @ReqContext() ctx: AuthenticatedRequestContext,
-        @Query() query: PaginationParamsDto,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
+        @Param('lectureId') lectureId: number,
+        @Query() pagination: PaginationParamsDto,
     ): Promise<BaseApiResponse<CommentOutput[]>> {
         this.logger.log(ctx, `${this.getComments.name} was called`);
 
-        const { articles, count } = await this.commentService.getArticles(
+        const { data, count } = await this.commentService.getPaged(
             ctx,
-            query.limit,
-            query.offset,
+            ctx.schoolId,
+            { lecture: { id: lectureId } },
+            pagination,
+            { author: true },
         );
 
-        return { data: articles, meta: { count } };
+        const output = plainToInstance(CommentOutput, data, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: output, meta: { count } };
     }
 
-    @Get(':id')
+    @Get(':commentId')
     @ApiOperation({
         summary: 'Get article by id API',
     })
@@ -104,19 +122,35 @@ export class CommentController {
         type: BaseApiErrorResponse,
     })
     @UseInterceptors(ClassSerializerInterceptor)
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, SchoolIdGuard)
     @ApiBearerAuth()
     async getArticle(
-        @ReqContext() ctx: AuthenticatedRequestContext,
-        @Param('id') id: number,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
+        @Param('lectureId') lectureId: number,
+        @Param('commentId') id: number,
     ): Promise<BaseApiResponse<CommentOutput>> {
         this.logger.log(ctx, `${this.getArticle.name} was called`);
 
-        const article = await this.commentService.getArticleById(ctx, id);
-        return { data: article, meta: {} };
+        const article = await this.commentService.getOne(
+            ctx,
+            ctx.schoolId,
+            {
+                id,
+                lecture: { id: lectureId },
+            },
+            {
+                author: true,
+            },
+        );
+
+        const output = plainToInstance(CommentOutput, article, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: output, meta: {} };
     }
 
-    @Patch(':id')
+    @Put(':commentId')
     @ApiOperation({
         summary: 'Update article API',
     })
@@ -126,21 +160,31 @@ export class CommentController {
     })
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBearerAuth()
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(JwtAuthGuard, SchoolIdGuard)
     async updateArticle(
-        @ReqContext() ctx: AuthenticatedRequestContext,
-        @Param('id') articleId: number,
-        @Body() input: UpdateArticleInput,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
+        @Param('lectureId') lectureId: number,
+        @Param('commentId') commentId: number,
+        @Body() input: UpdateCommentInput,
     ): Promise<BaseApiResponse<CommentOutput>> {
-        const article = await this.commentService.updateArticle(
+        const article = await this.commentService.update(
             ctx,
-            articleId,
+            ctx.schoolId,
+            {
+                id: commentId,
+                lecture: { id: lectureId },
+            },
             input,
         );
-        return { data: article, meta: {} };
+
+        const output = plainToInstance(CommentOutput, article, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: output, meta: {} };
     }
 
-    @Delete(':id')
+    @Delete(':commentId')
     @ApiOperation({
         summary: 'Delete article by id API',
     })
@@ -151,11 +195,15 @@ export class CommentController {
     @UseGuards(JwtAuthGuard)
     @ApiBearerAuth()
     async deleteArticle(
-        @ReqContext() ctx: AuthenticatedRequestContext,
-        @Param('id') id: number,
+        @ReqContext() ctx: SchoolAuthenticatedRequestContext,
+        @Param('lectureId') lectureId: number,
+        @Param('commentId') id: number,
     ): Promise<void> {
         this.logger.log(ctx, `${this.deleteArticle.name} was called`);
 
-        return this.commentService.deleteArticle(ctx, id);
+        return this.commentService.delete(ctx, ctx.schoolId, {
+            id,
+            lecture: { id: lectureId },
+        });
     }
 }

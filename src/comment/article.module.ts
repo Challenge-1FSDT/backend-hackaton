@@ -1,22 +1,23 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
+import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
 import { SharedModule } from '../shared/shared.module';
 import { UserModule } from '../user/user.module';
 import { CommentController } from './controllers/comment.controller';
-import { Article } from './entities/article.entity';
-import { ArticleRepository } from './repositories/article.repository';
+import { Comment } from './entities/comment.entity';
+import { CommentRepository } from './repositories/comment.repository';
 import { CommentService } from './services/comment.service';
-import { ArticleAclService } from './services/article-acl.service';
-import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
+import { CommentAclService } from './services/comment-acl.service';
 
 @Module({
     imports: [
         SharedModule,
-        TypeOrmModule.forFeature([Article]),
+        TypeOrmModule.forFeature([Comment]),
         UserModule,
         SchoolMemberModule,
     ],
-    providers: [CommentService, ArticleAclService, ArticleRepository],
+    providers: [CommentService, CommentAclService, CommentRepository],
     controllers: [CommentController],
     exports: [CommentService],
 })

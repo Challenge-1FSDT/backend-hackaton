@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsDate } from 'class-validator';
+import { IsDate, IsNotEmpty } from 'class-validator';
 
 export class LecturesFilterParams {
     @ApiProperty({
         type: String,
     })
+    @IsNotEmpty()
     @IsDate()
     @Type(() => Date)
     startAt: Date;
@@ -13,6 +14,7 @@ export class LecturesFilterParams {
     @ApiProperty({
         type: String,
     })
+    @IsNotEmpty()
     @IsDate()
     @Type(() => Date)
     endAt: Date;

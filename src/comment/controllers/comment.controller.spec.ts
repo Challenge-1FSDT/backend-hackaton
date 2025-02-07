@@ -4,11 +4,11 @@ import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { RequestContext } from '../../shared/request-context/request-context.dto';
 import { User } from '../../user/entities/user.entity';
+import { CommentOutput } from '../dtos/comment-output.dto';
 import {
     CreateCommentInput,
     UpdateArticleInput,
-} from '../dtos/article-input.dto';
-import { CommentOutput } from '../dtos/comment-output.dto';
+} from '../dtos/create-comment-input.dto';
 import { CommentService } from '../services/comment.service';
 import { CommentController } from './comment.controller';
 
