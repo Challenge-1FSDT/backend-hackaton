@@ -1,3 +1,15 @@
+# FIAP Hackaton
+
+Integrantes
+
+Anelise Estevam - RM353230
+
+Gustavo de Souza Fonseca - RM94067
+
+Anderson da Silva Machado - RM355290
+
+João Pedro Sanches Luciano - RM354782
+
 ## NestJS Starter Kit [v2]
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
@@ -9,7 +21,8 @@ This starter kit has the following outline:
 - Monolithic Project
 - REST API
 
-This is a Github Template Repository, so it can be easily [used as a starter template](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for other repositories.
+This is a Github Template Repository, so it can be
+easily [used as a starter template](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/creating-a-repository-from-a-template) for other repositories.
 
 ## Sample implementations
 
@@ -33,13 +46,16 @@ One of our main principals has been to keep the starter kit as lightweight as po
 | Auto-generated OpenAPI   | -                  | Done     |
 | Auto-generated ChangeLog | -                  | WIP      |
 
-Apart from these features above, our start-kit comes loaded with a bunch of minor awesomeness like prettier integration, commit-linting husky hooks, package import sorting, SonarCloud github actions, docker-compose for database dependencies, etc. :D
+Apart from these features above, our start-kit comes loaded with a bunch of minor awesomeness like prettier integration, commit-linting husky hooks, package import sorting,
+SonarCloud github actions, docker-compose for database dependencies, etc. :D
 
 ## Consulting
 
-Most of the features added to this starter kit have already been tried out in production applications by us here at MonstarLab. Our production applications are more feature rich, and we constantly strive to bring those features to this OSS starter kit.
+Most of the features added to this starter kit have already been tried out in production applications by us here at MonstarLab. Our production applications are more feature rich,
+and we constantly strive to bring those features to this OSS starter kit.
 
-If you would like to use a more feature rich starter kit, with more awesome features from Day 1, then please reach out to us and we can collaborate on it together as technology partners. :)
+If you would like to use a more feature rich starter kit, with more awesome features from Day 1, then please reach out to us and we can collaborate on it together as technology
+partners. :)
 
 ## Installation
 
@@ -57,11 +73,13 @@ Generate public and private key pair for jwt authentication:
 ### With docker
 
 Run this command:
+
 ```bash
 ./scripts/generate-jwt-keys
 ```
 
 It will output something like this. You only need to add it to your `.env` file.
+
 ```
 To setup the JWT keys, please add the following values to your .env file:
 JWT_PUBLIC_KEY_BASE64="(long base64 content)"
@@ -129,7 +147,8 @@ $ docker run -p 3000:3000 --volume 'pwd':/usr/src/app --network --env-file .env 
 $ docker compose up
 ```
 
-Learn more about Docker conventions [here](https://github.com/monstar-lab-group/nodejs-backend/blob/master/architecture/docker-ready.md). (WIP - Currently this is an internal org link.)
+Learn more about Docker conventions [here](https://github.com/monstar-lab-group/nodejs-backend/blob/master/architecture/docker-ready.md). (WIP - Currently this is an internal org
+link.)
 
 ## Test
 
