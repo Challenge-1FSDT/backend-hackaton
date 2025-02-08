@@ -10,7 +10,6 @@ import {
 } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { Comment } from '../../comment/entities/comment.entity';
 import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
 
 @Entity('users')
@@ -51,11 +50,8 @@ export class User {
     isDisabled: boolean;
 
     // * Relations
-    @OneToMany(() => Comment, (article) => article.author)
-    articles: Comment[];
-
     @OneToMany(() => SchoolMember, (schoolMember) => schoolMember.user)
-    memberships: SchoolMember[];
+    memberships: Promise<SchoolMember[]>;
 
     // * Timestamps
     @CreateDateColumn({ name: 'createdAt' })
