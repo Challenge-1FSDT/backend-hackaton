@@ -86,8 +86,8 @@ export class SchoolMemberService {
 
         const savedMember = await this.repository.save({
             ...create,
-            schoolId,
-            userId: user.id,
+            school: { id: schoolId },
+            user: { id: user.id },
         });
 
         return savedMember;
