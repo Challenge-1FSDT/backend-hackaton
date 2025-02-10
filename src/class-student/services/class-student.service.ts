@@ -121,6 +121,9 @@ export class ClassStudentService {
             create.userId,
         );
         const data = await this.repository.save({
+            school: {
+                id: ctx.schoolId,
+            },
             schoolMember: {
                 id: schoolMember.id,
             },
@@ -156,6 +159,9 @@ export class ClassStudentService {
             userId,
         );
         await this.repository.softDelete({
+            school: {
+                id: ctx.schoolId,
+            },
             class: {
                 id: classId,
             },
