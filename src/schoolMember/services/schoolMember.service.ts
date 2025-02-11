@@ -124,13 +124,15 @@ export class SchoolMemberService {
                 role: ERole.USER,
             }));
 
-        const savedMember = await this.repository.save({
+        await this.repository.save({
             ...create,
             school: { id: schoolId },
             user: { id: user.id },
         });
 
-        return savedMember;
+        const refreshedMember = await this.getOne(ctx, schoolId, user.id);
+
+        return refreshedMember;
     }
 
     public async delete(

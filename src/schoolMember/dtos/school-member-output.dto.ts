@@ -7,7 +7,13 @@ import { SchoolMember } from '../entities/schoolMember.entity';
 export class SchoolMemberOutput {
     @ApiProperty()
     @Expose()
-    @Transform(({ obj }: { obj: SchoolMember }) => obj.user!.id)
+    @Transform(
+        ({ obj, value }: { obj: SchoolMember | undefined; value: number }) =>
+            obj?.user?.id ?? value,
+        {
+            toPlainOnly: true,
+        },
+    )
     id: number;
 
     @ApiProperty()
