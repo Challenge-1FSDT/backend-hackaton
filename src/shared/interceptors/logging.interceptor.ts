@@ -20,6 +20,7 @@ export class LoggingInterceptor implements NestInterceptor {
         const request = context.switchToHttp().getRequest();
         const method = request.method;
         const ctx = createRequestContext(request);
+        const reqData = { method, url: request.url, body: request.body };
 
         const now = Date.now();
         return next.handle().pipe(
@@ -29,9 +30,17 @@ export class LoggingInterceptor implements NestInterceptor {
 
                 const responseTime = Date.now() - now;
 
-                const resData = { method, statusCode, responseTime };
+                const resData = {
+                    method,
+                    statusCode,
+                    responseTime,
+                    body: response.body,
+                };
 
-                this.appLogger.log(ctx, 'Request completed', { resData });
+                this.appLogger.log(ctx, 'Request completed', {
+                    reqData,
+                    resData,
+                });
             }),
         );
     }
