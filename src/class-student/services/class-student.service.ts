@@ -115,7 +115,7 @@ export class ClassStudentService {
             throw new ForbiddenException();
         }
 
-        const schoolMember = await this.schoolMemberService.getSchoolMember(
+        const schoolMember = await this.schoolMemberService.getOne(
             ctx,
             ctx.schoolId,
             create.userId,
@@ -153,7 +153,7 @@ export class ClassStudentService {
             throw new ForbiddenException();
         }
 
-        const schoolMember = await this.schoolMemberService.getSchoolMember(
+        const schoolMember = await this.schoolMemberService.getOne(
             ctx,
             ctx.schoolId,
             userId,

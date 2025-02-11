@@ -3,10 +3,15 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
+import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
+import {
+    PaginatedResult,
+    PaginationParamsDto,
+} from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { UserService } from '../../user/services/user.service';
@@ -28,12 +33,47 @@ export class SchoolMemberService {
         this.logger.setContext(SchoolMemberService.name);
     }
 
-    public async getSchoolMember(
+    public async getPaged(
+        ctx: AuthenticatedRequestContext,
+        schoolId: number,
+        where: FindOptionsWhere<SchoolMember>,
+        pagination: PaginationParamsDto,
+        relations: FindOptionsRelations<SchoolMember>,
+    ): Promise<PaginatedResult<SchoolMember>> {
+        this.logger.log(ctx, `${this.getPaged.name} was called`);
+
+        const actor = ctx.user.schoolMember!;
+        const isAllowed =
+            ctx.user.role === ERole.ADMIN ||
+            (await this.aclService
+                .forActor(actor)
+                .withContext(ctx)
+                .canDoAction(Action.List));
+        if (!isAllowed) {
+            throw new ForbiddenException();
+        }
+
+        const [data, count] = await this.repository.findAndCount({
+            where: {
+                ...where,
+                school: {
+                    id: schoolId,
+                },
+            },
+            take: pagination.limit,
+            skip: pagination.offset,
+            relations,
+        });
+
+        return { data, count };
+    }
+
+    public async getOne(
         ctx: AuthenticatedRequestContext,
         schoolId: number,
         userId: number,
     ): Promise<SchoolMember> {
-        this.logger.log(ctx, `${this.getSchoolMember.name} was called`);
+        this.logger.log(ctx, `${this.getOne.name} was called`);
 
         const member = await this.repository.findOne({
             where: { user: { id: userId }, school: { id: schoolId } },
@@ -56,12 +96,12 @@ export class SchoolMemberService {
         return member;
     }
 
-    public async createSchoolMember(
+    public async create(
         ctx: AuthenticatedRequestContext,
         schoolId: number,
         create: CreateSchoolMemberInput,
     ): Promise<SchoolMember> {
-        this.logger.log(ctx, `${this.createSchoolMember.name} was called`);
+        this.logger.log(ctx, `${this.create.name} was called`);
 
         const actor: Actor = ctx.user.schoolMember!;
         const isAllowed =
@@ -91,5 +131,26 @@ export class SchoolMemberService {
         });
 
         return savedMember;
+    }
+
+    public async delete(
+        ctx: AuthenticatedRequestContext,
+        schoolId: number,
+        userId: number,
+    ): Promise<void> {
+        this.logger.log(ctx, `${this.delete.name} was called`);
+
+        const actor = ctx.user.schoolMember!;
+        const isAllowed =
+            ctx.user.role === ERole.ADMIN ||
+            (await this.aclService.forActor(actor).canDoAction(Action.Delete));
+        if (!isAllowed) {
+            throw new ForbiddenException();
+        }
+
+        await this.repository.delete({
+            school: { id: schoolId },
+            user: { id: userId },
+        });
     }
 }

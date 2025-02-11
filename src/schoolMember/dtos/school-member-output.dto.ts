@@ -1,11 +1,13 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 
 import { ESchoolRole } from '../constants/schoolRole.constant';
+import { SchoolMember } from '../entities/schoolMember.entity';
 
 export class SchoolMemberOutput {
     @ApiProperty()
     @Expose()
+    @Transform(({ obj }: { obj: SchoolMember }) => obj.user!.id)
     id: number;
 
     @ApiProperty()

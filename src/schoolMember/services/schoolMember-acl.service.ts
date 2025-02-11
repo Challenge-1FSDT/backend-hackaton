@@ -15,11 +15,11 @@ export class SchoolMemberAclService extends BaseAclService<
         super();
         this.canDo(ESchoolRole.ADMIN, [Action.Manage]);
         this.canDo(ESchoolRole.FACULTY, [Action.Manage]);
-        this.canDo(ESchoolRole.TEACHER, [Action.Read]);
+        this.canDo(ESchoolRole.TEACHER, [Action.List, Action.Read]);
         this.canDo(ESchoolRole.STUDENT, [Action.Read], this.isSelf);
     }
 
     public isSelf(schoolMember: SchoolMember, actor: Actor): boolean {
-        return schoolMember.user?.id === actor.id;
+        return schoolMember.user!.id === actor.id;
     }
 }

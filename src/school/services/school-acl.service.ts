@@ -31,11 +31,7 @@ export class SchoolAclService extends BaseAclService<
     ): Promise<boolean> {
         return (
             !ctx?.user?.schoolMember ||
-            !!(await this.schoolMemberService.getSchoolMember(
-                ctx,
-                school.id,
-                actor.id,
-            ))
+            !!(await this.schoolMemberService.getOne(ctx, school.id, actor.id))
         );
     }
 }

@@ -50,7 +50,7 @@ export class JwtAuthStrategy extends PassportStrategy(
 
         let schoolMemberClaims: SchoolMemberClaims | null = null;
         if (context.schoolId) {
-            const schoolMember = await this.schoolMemberService.getSchoolMember(
+            const schoolMember = await this.schoolMemberService.getOne(
                 {
                     ...context,
                     user: {

@@ -103,7 +103,7 @@ export class SchoolService {
         if (!user) {
             throw new InternalServerErrorException();
         }
-        await this.schoolMemberService.createSchoolMember(ctx, savedSchool.id, {
+        await this.schoolMemberService.create(ctx, savedSchool.id, {
             firstName: user.firstName,
             lastName: user.lastName,
             email: user.email,
