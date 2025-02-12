@@ -111,7 +111,7 @@ export class AttendanceService {
             lectureId,
         );
 
-        const now = new Date();
+        const now = DateTime.now().setZone('America/Sao_Paulo');
         let attendance = await this.repository.findOne({
             where: {
                 school: { id: schoolId },
@@ -122,11 +122,17 @@ export class AttendanceService {
         });
 
         const startDiff = DateTime.fromJSDate(lecture.startAt)
-            .diffNow('minutes')
+            .setZone('America/Sao_Paulo', {
+                keepLocalTime: true,
+            })
+            .diff(now, 'minutes')
             .negate()
             .toObject().minutes!;
         const endDiff = DateTime.fromJSDate(lecture.endAt)
-            .diffNow('minutes')
+            .setZone('America/Sao_Paulo', {
+                keepLocalTime: true,
+            })
+            .diff(now, 'minutes')
             .negate()
             .toObject().minutes!;
 
@@ -141,7 +147,7 @@ export class AttendanceService {
                 school: { id: schoolId },
                 lecture: { id: lectureId },
                 student: { user: { id: userId } },
-                startAt: now,
+                startAt: now.toJSDate(),
             });
 
             const isAllowed =
@@ -172,7 +178,7 @@ export class AttendanceService {
 
             attendance = await this.repository.save({
                 ...attendance,
-                endAt: now,
+                endAt: now.toJSDate(),
             });
         } else {
             throw new UnauthorizedException(
