@@ -27,6 +27,6 @@ export class AttendanceAclService extends BaseAclService<
         attendance: Attendance,
         user: Actor,
     ): Promise<boolean> {
-        return attendance.student.user?.id === user.id;
+        return attendance.student.id === user.id;
     }
 }
