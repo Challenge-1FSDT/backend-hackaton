@@ -146,7 +146,7 @@ export class AttendanceService {
             const create = plainToInstance(Attendance, {
                 school: { id: schoolId },
                 lecture: { id: lectureId },
-                student: { user: { id: userId } },
+                student: { id: ctx.user.schoolMember?.id },
                 startAt: now.toJSDate(),
             });
 
