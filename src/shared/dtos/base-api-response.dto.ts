@@ -19,7 +19,7 @@ export function SwaggerBaseApiResponse<T extends ApiPropertyType>(
     type: T,
 ): typeof BaseApiResponse {
     class ExtendedBaseApiResponse<T> extends BaseApiResponse<T> {
-        @ApiProperty() // Casting `type` to `any` to bypass type checking for now
+        @ApiProperty({ type: type as any }) // Casting `type` to `any` to bypass type checking for now
         declare public data: T;
     }
 
