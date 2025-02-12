@@ -20,12 +20,12 @@ import {
     ApiTags,
 } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
-import { SchoolRoles } from 'src/schoolMember/decorators/schoolRole.decorator';
+import { SchoolRoles } from 'src/school-member/decorators/schoolRole.decorator';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SchoolIdGuard } from '../../school/guards/school-id.guard';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
-import { SchoolRolesGuard } from '../../schoolMember/guards/schoolRoles.guard';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolRolesGuard } from '../../school-member/guards/schoolRoles.guard';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,

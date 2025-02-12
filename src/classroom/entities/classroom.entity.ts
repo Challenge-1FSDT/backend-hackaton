@@ -19,6 +19,9 @@ export class Classroom {
     @Column({ length: 200 })
     name: string;
 
+    @Column({ length: 2000, nullable: true })
+    description?: string;
+
     @Column({ type: 'geometry', nullable: true })
     location?: Point;
 

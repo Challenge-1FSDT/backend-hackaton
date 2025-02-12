@@ -30,9 +30,9 @@ import { SchoolAuthenticatedRequestContext } from 'src/shared/request-context/re
 import { Between } from 'typeorm';
 
 import { SchoolIdGuard } from '../../school/guards/school-id.guard';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
-import { SchoolRoles } from '../../schoolMember/decorators/schoolRole.decorator';
-import { SchoolRolesGuard } from '../../schoolMember/guards/schoolRoles.guard';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolRoles } from '../../school-member/decorators/schoolRole.decorator';
+import { SchoolRolesGuard } from '../../school-member/guards/schoolRoles.guard';
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { ReqContext } from '../../shared/request-context/req-context.decorator';

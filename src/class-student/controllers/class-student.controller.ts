@@ -23,7 +23,7 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { SchoolIdGuard } from 'src/school/guards/school-id.guard';
 import { AppLogger } from 'src/shared/logger/logger.service';
 
-import { SchoolMemberOutput } from '../../schoolMember/dtos/school-member-output.dto';
+import { SchoolMemberOutput } from '../../school-member/dtos/school-member-output.dto';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,

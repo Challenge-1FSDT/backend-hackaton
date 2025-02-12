@@ -5,8 +5,8 @@ import { plainToInstance } from 'class-transformer';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 
-import { SchoolMemberClaims } from '../../schoolMember/dtos/school-member-claims.dto';
-import { SchoolMemberService } from '../../schoolMember/services/schoolMember.service';
+import { SchoolMemberClaims } from '../../school-member/dtos/school-member-claims.dto';
+import { SchoolMemberService } from '../../school-member/services/schoolMember.service';
 import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { createRequestContext } from '../../shared/request-context/util';
 import { UserService } from '../../user/services/user.service';

@@ -3,38 +3,39 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { DeepPartial, FindOptionsRelations, FindOptionsWhere } from 'typeorm';
+import { ERole } from 'src/auth/constants/role.constant';
+import { Action } from 'src/shared/acl/action.constant';
+import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
 
-import { ERole } from '../../auth/constants/role.constant';
-import { Action } from '../../shared/acl/action.constant';
 import {
     PaginatedResult,
     PaginationParamsDto,
 } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
-import { CreateSubjectTeacherInput } from '../dtos/create-subject-teacher-input.dto';
-import { SubjectTeacher } from '../entities/subject-teacher.entity';
-import { SubjectTeacherRepository } from '../repositories/subject-teacher.repository';
-import { SubjectTeacherAclService } from './subject-teacher-acl.service';
+import { CreateClassroomInput } from '../dtos/create-classroom-input.dto';
+import { UpdateClassroomInput } from '../dtos/update-classroom-input.dto';
+import { Classroom } from '../entities/classroom.entity';
+import { ClassroomRepository } from '../repositories/classroom.repository';
+import { ClassroomAclService } from './classroom-acl.service';
 
 @Injectable()
-export class SubjectTeacherService {
-    constructor(
-        private readonly repository: SubjectTeacherRepository,
-        private readonly aclService: SubjectTeacherAclService,
+export class ClassroomService {
+    public constructor(
+        private readonly repository: ClassroomRepository,
+        private readonly aclService: ClassroomAclService,
         private readonly logger: AppLogger,
     ) {
-        this.logger.setContext(SubjectTeacherService.name);
+        this.logger.setContext(ClassroomService.name);
     }
 
-    public async getPaged(
+    async getPaged(
         ctx: SchoolAuthenticatedRequestContext,
         schoolId: number,
-        where: FindOptionsWhere<SubjectTeacher>,
+        where: FindOptionsWhere<Classroom>,
         pagination: PaginationParamsDto,
-        relations: FindOptionsRelations<SubjectTeacher>,
-    ): Promise<PaginatedResult<SubjectTeacher>> {
+        relations: FindOptionsRelations<Classroom>,
+    ): Promise<PaginatedResult<Classroom>> {
         this.logger.log(ctx, `${this.getPaged.name} was called`);
 
         const actor = ctx.user.schoolMember!;
@@ -63,15 +64,15 @@ export class SubjectTeacherService {
         return { data, count };
     }
 
-    public async getOne(
+    async getOne(
         ctx: SchoolAuthenticatedRequestContext,
         schoolId: number,
-        where: FindOptionsWhere<SubjectTeacher>,
-        relations: FindOptionsRelations<SubjectTeacher>,
-    ): Promise<SubjectTeacher> {
+        where: FindOptionsWhere<Classroom>,
+        relations: FindOptionsRelations<Classroom>,
+    ): Promise<Classroom> {
         this.logger.log(ctx, `${this.getOne.name} was called`);
 
-        const subjectTeacher = await this.repository.findOne({
+        const classroom = await this.repository.findOne({
             where: {
                 ...where,
                 school: {
@@ -80,7 +81,30 @@ export class SubjectTeacherService {
             },
             relations,
         });
-        if (!subjectTeacher) {
+        if (!classroom) {
+            throw new NotFoundException();
+        }
+
+        return classroom;
+    }
+
+    async update(
+        ctx: SchoolAuthenticatedRequestContext,
+        schoolId: number,
+        classroomId: number,
+        dto: UpdateClassroomInput,
+    ): Promise<Classroom> {
+        this.logger.log(ctx, `${this.update.name} was called`);
+
+        const classroom = await this.repository.findOne({
+            where: {
+                id: classroomId,
+                school: {
+                    id: schoolId,
+                },
+            },
+        });
+        if (!classroom) {
             throw new NotFoundException();
         }
 
@@ -89,20 +113,22 @@ export class SubjectTeacherService {
             ctx.user.role === ERole.ADMIN ||
             (await this.aclService
                 .forActor(actor)
-                .canDoAction(Action.Read, subjectTeacher));
+                .canDoAction(Action.Update, classroom));
         if (!isAllowed) {
             throw new ForbiddenException();
         }
 
-        return subjectTeacher;
+        return this.repository.save({
+            ...classroom,
+            ...dto,
+        });
     }
 
-    public async create(
+    async create(
         ctx: SchoolAuthenticatedRequestContext,
         schoolId: number,
-        subjectId: number,
-        create: CreateSubjectTeacherInput,
-    ): Promise<SubjectTeacher> {
+        dto: CreateClassroomInput,
+    ): Promise<Classroom> {
         this.logger.log(ctx, `${this.create.name} was called`);
 
         const actor = ctx.user.schoolMember!;
@@ -116,64 +142,45 @@ export class SubjectTeacherService {
             throw new ForbiddenException();
         }
 
-        const data = await this.repository.save({
-            ...create,
+        const classroom = this.repository.create({
+            ...dto,
             school: {
                 id: schoolId,
             },
-            subject: {
-                id: subjectId,
-                school: {
-                    id: schoolId,
-                },
-            },
-            schoolMember: {
-                user: {
-                    id: create.userId,
-                },
-                school: {
-                    id: schoolId,
-                },
-            },
-        } as DeepPartial<SubjectTeacher>);
+        } as Classroom);
 
-        return data;
+        return this.repository.save(classroom);
     }
 
-    public async delete(
+    async delete(
         ctx: SchoolAuthenticatedRequestContext,
         schoolId: number,
-        subjectId: number,
-        userId: number,
+        classroomId: number,
     ): Promise<void> {
         this.logger.log(ctx, `${this.delete.name} was called`);
 
-        const actor = ctx.user.schoolMember!;
-        const isAllowed =
-            ctx.user.role === ERole.ADMIN ||
-            (await this.aclService.forActor(actor).canDoAction(Action.Delete));
-        if (!isAllowed) {
-            throw new ForbiddenException();
-        }
-
-        await this.repository.softDelete({
-            school: {
-                id: schoolId,
-            },
-            subject: {
-                id: subjectId,
-                school: {
-                    id: schoolId,
-                },
-            },
-            schoolMember: {
-                user: {
-                    id: userId,
-                },
+        const classroom = await this.repository.findOne({
+            where: {
+                id: classroomId,
                 school: {
                     id: schoolId,
                 },
             },
         });
+        if (!classroom) {
+            throw new NotFoundException();
+        }
+
+        const actor = ctx.user.schoolMember!;
+        const isAllowed =
+            ctx.user.role === ERole.ADMIN ||
+            (await this.aclService
+                .forActor(actor)
+                .canDoAction(Action.Delete, classroom));
+        if (!isAllowed) {
+            throw new ForbiddenException();
+        }
+
+        await this.repository.softDelete(classroomId);
     }
 }

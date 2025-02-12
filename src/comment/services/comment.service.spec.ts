@@ -289,14 +289,14 @@ describe('ArticleService', () => {
 
             mockedRepository.getById.mockResolvedValue(foundArticle);
 
-            await service.delete(ctx, articleId);
+            await service.softDelete(ctx, articleId);
             expect(mockedRepository.remove).toHaveBeenCalledWith(foundArticle);
         });
 
         it('should throw not found exception if article not found', async () => {
             mockedRepository.getById.mockRejectedValue(new NotFoundException());
             try {
-                await service.delete(ctx, articleId);
+                await service.softDelete(ctx, articleId);
             } catch (error: any) {
                 expect(error).toBeInstanceOf(NotFoundException);
             }
@@ -321,7 +321,7 @@ describe('ArticleService', () => {
             });
 
             try {
-                await service.delete(ctx, articleId);
+                await service.softDelete(ctx, articleId);
             } catch (error: any) {
                 expect(error.constructor).toEqual(UnauthorizedException);
                 expect(mockedRepository.save).not.toHaveBeenCalled();

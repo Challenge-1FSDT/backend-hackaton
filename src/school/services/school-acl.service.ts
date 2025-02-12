@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { SchoolMemberService } from '../../schoolMember/services/schoolMember.service';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolMemberService } from '../../school-member/services/schoolMember.service';
 import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
@@ -22,6 +23,11 @@ export class SchoolAclService extends BaseAclService<
             [Action.List, Action.Read],
             this.hasBasicAccessTo.bind(this),
         );
+        this.canDo(
+            ERole.USER,
+            [Action.Update, Action.Delete],
+            this.hasAdminAccessTo.bind(this),
+        );
     }
 
     public async hasBasicAccessTo(
@@ -30,8 +36,35 @@ export class SchoolAclService extends BaseAclService<
         ctx?: AuthenticatedRequestContext,
     ): Promise<boolean> {
         return (
-            !ctx?.user?.schoolMember ||
-            !!(await this.schoolMemberService.getOne(ctx, school.id, actor.id))
+            !!ctx &&
+            !!(
+                ctx?.user?.schoolMember ||
+                (await this.schoolMemberService.getOne(
+                    ctx,
+                    school.id,
+                    actor.id,
+                ))
+            )
+        );
+    }
+
+    public async hasAdminAccessTo(
+        school: School,
+        actor: Actor,
+        ctx?: AuthenticatedRequestContext,
+    ): Promise<boolean> {
+        return (
+            !!ctx &&
+            [ESchoolRole.ADMIN].includes(
+                (
+                    ctx?.user?.schoolMember ||
+                    (await this.schoolMemberService.getOne(
+                        ctx,
+                        school.id,
+                        actor.id,
+                    ))
+                ).role,
+            )
         );
     }
 }

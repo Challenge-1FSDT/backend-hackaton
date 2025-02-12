@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
+import { SchoolMemberModule } from '../school-member/schoolMember.module';
 import { SharedModule } from '../shared/shared.module';
 import { UserModule } from '../user/user.module';
 import { SchoolController } from './controllers/school.controller';

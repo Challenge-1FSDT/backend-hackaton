@@ -7,14 +7,15 @@ import {
 import { plainToInstance } from 'class-transformer';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
-import { SchoolMemberService } from '../../schoolMember/services/schoolMember.service';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolMemberService } from '../../school-member/services/schoolMember.service';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
 import { AppLogger } from '../../shared/logger/logger.service';
 import { AuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
 import { UserService } from '../../user/services/user.service';
 import { CreateSchoolInput } from '../dtos/create-school-input.dto';
+import { UpdateSchoolInput } from '../dtos/update-school-input.dto';
 import { School } from '../entities/school.entity';
 import { SchoolRepository } from '../repositories/school.repository';
 import { SchoolAclService } from './school-acl.service';
@@ -75,11 +76,11 @@ export class SchoolService {
         return school;
     }
 
-    async createSchool(
+    async create(
         ctx: AuthenticatedRequestContext,
         create: CreateSchoolInput,
     ): Promise<School> {
-        this.logger.log(ctx, `${this.createSchool.name} was called`);
+        this.logger.log(ctx, `${this.create.name} was called`);
 
         const exists = await this.repository.existsBy({ taxId: create.taxId });
         if (exists) {
@@ -114,5 +115,51 @@ export class SchoolService {
         });
 
         return savedSchool;
+    }
+
+    async update(
+        ctx: AuthenticatedRequestContext,
+        schoolId: number,
+        update: UpdateSchoolInput,
+    ): Promise<School> {
+        this.logger.log(ctx, `${this.update.name} was called`);
+
+        const school = await this.repository.getById(schoolId);
+
+        const actor: Actor = ctx.user!;
+        const isAllowed = await this.aclService
+            .forActor(actor)
+            .withContext(ctx)
+            .canDoAction(Action.Update, school);
+        if (!isAllowed) {
+            throw new ForbiddenException();
+        }
+
+        const updatedSchool = await this.repository.save({
+            ...school,
+            ...update,
+        });
+
+        return updatedSchool;
+    }
+
+    async delete(
+        ctx: AuthenticatedRequestContext,
+        schoolId: number,
+    ): Promise<void> {
+        this.logger.log(ctx, `${this.delete.name} was called`);
+
+        const school = await this.repository.getById(schoolId);
+
+        const actor: Actor = ctx.user!;
+        const isAllowed = await this.aclService
+            .forActor(actor)
+            .withContext(ctx)
+            .canDoAction(Action.Delete, school);
+        if (!isAllowed) {
+            throw new ForbiddenException();
+        }
+
+        await this.repository.softDelete(schoolId);
     }
 }

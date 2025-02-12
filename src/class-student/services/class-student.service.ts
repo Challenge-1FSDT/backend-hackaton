@@ -3,7 +3,7 @@ import {
     Injectable,
     NotFoundException,
 } from '@nestjs/common';
-import { SchoolMemberService } from 'src/schoolMember/services/schoolMember.service';
+import { SchoolMemberService } from 'src/school-member/services/schoolMember.service';
 import { FindOptionsRelations, FindOptionsWhere } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';

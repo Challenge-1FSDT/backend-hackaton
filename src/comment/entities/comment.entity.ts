@@ -12,7 +12,7 @@ import {
 
 import { Lecture } from '../../lecture/entities/lecture.entity';
 import { School } from '../../school/entities/school.entity';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { SchoolMember } from '../../school-member/entities/schoolMember.entity';
 
 @Entity('comments')
 export class Comment {

@@ -2,7 +2,7 @@ import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Class } from '../../class/entities/class.entity';
 import { School } from '../../school/entities/school.entity';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { SchoolMember } from '../../school-member/entities/schoolMember.entity';
 
 @Entity('class_students')
 export class ClassStudent {
@@ -19,10 +19,7 @@ export class ClassStudent {
     @JoinColumn()
     class: Class;
 
-    @ManyToOne(
-        () => SchoolMember,
-        { nullable: false },
-    )
+    @ManyToOne(() => SchoolMember, { nullable: false })
     @JoinColumn()
     schoolMember: SchoolMember;
 }

@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 
 import { Classroom } from '../../classroom/entities/classroom.entity';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { SchoolMember } from '../../school-member/entities/schoolMember.entity';
 
 @Entity('schools')
 export class School {

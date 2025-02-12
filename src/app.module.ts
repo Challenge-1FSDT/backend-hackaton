@@ -10,7 +10,7 @@ import { ClassroomModule } from './classroom/classroom.module';
 import { ArticleModule } from './comment/article.module';
 import { LectureModule } from './lecture/lecture.module';
 import { SchoolModule } from './school/school.module';
-import { SchoolMemberModule } from './schoolMember/schoolMember.module';
+import { SchoolMemberModule } from './school-member/schoolMember.module';
 import { SharedModule } from './shared/shared.module';
 import { SubjectModule } from './subject/subject.module';
 import { SubjectTeacherModule } from './subject-teacher/subject-teacher.module';

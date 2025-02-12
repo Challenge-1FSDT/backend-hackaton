@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
+import { SchoolMemberModule } from '../school-member/schoolMember.module';
 import { SharedModule } from '../shared/shared.module';
 import { SubjectTeacherController } from './controllers/subject-teacher.controller';
 import { SubjectTeacher } from './entities/subject-teacher.entity';

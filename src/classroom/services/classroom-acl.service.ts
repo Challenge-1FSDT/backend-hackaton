@@ -3,12 +3,14 @@ import { Injectable } from '@nestjs/common';
 import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
 import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
-import { ClassStudent } from '../entities/class-student.entity';
+import { SchoolAuthenticatedRequestContext } from '../../shared/request-context/request-context.dto';
+import { Classroom } from '../entities/classroom.entity';
 
 @Injectable()
-export class ClassStudentAclService extends BaseAclService<
+export class ClassroomAclService extends BaseAclService<
     ESchoolRole,
-    ClassStudent
+    Classroom,
+    SchoolAuthenticatedRequestContext
 > {
     constructor() {
         super();

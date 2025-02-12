@@ -10,7 +10,7 @@ import {
 } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { SchoolMember } from '../../school-member/entities/schoolMember.entity';
 
 @Entity('users')
 export class User {

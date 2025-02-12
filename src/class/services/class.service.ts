@@ -6,7 +6,7 @@ import {
 import { FindOptionsWhere } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';
 import {
@@ -179,7 +179,7 @@ export class ClassService {
             throw new ForbiddenException();
         }
 
-        await this.repository.delete({
+        await this.repository.softDelete({
             school: {
                 id: schoolId,
             },

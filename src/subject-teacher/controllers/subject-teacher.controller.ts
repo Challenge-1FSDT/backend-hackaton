@@ -22,10 +22,10 @@ import { plainToInstance } from 'class-transformer';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { SchoolIdGuard } from '../../school/guards/school-id.guard';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
-import { SchoolRoles } from '../../schoolMember/decorators/schoolRole.decorator';
-import { SchoolMemberOutput } from '../../schoolMember/dtos/school-member-output.dto';
-import { SchoolRolesGuard } from '../../schoolMember/guards/schoolRoles.guard';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolRoles } from '../../school-member/decorators/schoolRole.decorator';
+import { SchoolMemberOutput } from '../../school-member/dtos/school-member-output.dto';
+import { SchoolRolesGuard } from '../../school-member/guards/schoolRoles.guard';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,

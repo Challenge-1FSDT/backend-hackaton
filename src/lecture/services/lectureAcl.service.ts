@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 
 import { ClassStudentService } from '../../class-student/services/class-student.service';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
 import { BaseAclService } from '../../shared/acl/acl.service';
 import { Action } from '../../shared/acl/action.constant';
 import { Actor } from '../../shared/acl/actor.constant';

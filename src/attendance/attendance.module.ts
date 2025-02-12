@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
-import { SchoolMemberModule } from '../schoolMember/schoolMember.module';
+import { LectureModule } from '../lecture/lecture.module';
+import { SchoolMemberModule } from '../school-member/schoolMember.module';
 import { SharedModule } from '../shared/shared.module';
 import { AttendanceController } from './controllers/attendance.controller';
 import { Attendance } from './entities/attendance.entity';
-import { LectureModule } from '../lecture/lecture.module';
-import { AttendanceService } from './services/attendance.service';
 import { AttendanceRepository } from './repositories/attendance.repository';
+import { AttendanceService } from './services/attendance.service';
 import { AttendanceAclService } from './services/attendanceAcl.service';
 
 @Module({

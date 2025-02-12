@@ -7,7 +7,7 @@ import { Actor } from 'src/shared/acl/actor.constant';
 import { DeepPartial, FindOptionsWhere } from 'typeorm';
 
 import { ERole } from '../../auth/constants/role.constant';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
 import { Action } from '../../shared/acl/action.constant';
 import { PaginationParamsDto } from '../../shared/dtos/pagination-params.dto';
 import { AppLogger } from '../../shared/logger/logger.service';
@@ -51,7 +51,7 @@ export class LectureService {
             where: {
                 ...where,
                 school: {
-                    id: schoolId!,
+                    id: schoolId,
                 },
                 ...(ctx.user.schoolMember?.role === ESchoolRole.TEACHER && {
                     lectures: {
@@ -221,7 +221,7 @@ export class LectureService {
             throw new ForbiddenException();
         }
 
-        await this.repository.delete({
+        await this.repository.softDelete({
             school: {
                 id: schoolId,
             },

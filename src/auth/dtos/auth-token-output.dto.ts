@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
 
-import { SchoolMemberClaims } from '../../schoolMember/dtos/school-member-claims.dto';
+import { SchoolMemberClaims } from '../../school-member/dtos/school-member-claims.dto';
 import { ERole } from '../constants/role.constant';
 
 export class AuthTokenOutput {

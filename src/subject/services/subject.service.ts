@@ -170,7 +170,7 @@ export class SubjectService {
             throw new ForbiddenException();
         }
 
-        await this.repository.delete({
+        await this.repository.softDelete({
             school: {
                 id: schoolId,
             },

@@ -19,9 +19,9 @@ import {
 import { plainToInstance } from 'class-transformer';
 
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { ESchoolRole } from '../../schoolMember/constants/schoolRole.constant';
-import { SchoolRoles } from '../../schoolMember/decorators/schoolRole.decorator';
-import { SchoolRolesGuard } from '../../schoolMember/guards/schoolRoles.guard';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolRoles } from '../../school-member/decorators/schoolRole.decorator';
+import { SchoolRolesGuard } from '../../school-member/guards/schoolRoles.guard';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,

@@ -2,11 +2,13 @@ import {
     Body,
     ClassSerializerInterceptor,
     Controller,
+    Delete,
     Get,
     HttpStatus,
     Param,
     ParseIntPipe,
     Post,
+    Put,
     Query,
     UseGuards,
     UseInterceptors,
@@ -23,6 +25,9 @@ import { ERole } from '../../auth/constants/role.constant';
 import { Roles } from '../../auth/decorators/role.decorator';
 import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
+import { ESchoolRole } from '../../school-member/constants/schoolRole.constant';
+import { SchoolRoles } from '../../school-member/decorators/schoolRole.decorator';
+import { SchoolRolesGuard } from '../../school-member/guards/schoolRoles.guard';
 import {
     BaseApiErrorResponse,
     BaseApiResponse,
@@ -60,6 +65,10 @@ export class SchoolController {
         status: HttpStatus.UNAUTHORIZED,
         type: BaseApiErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        type: BaseApiErrorResponse,
+    })
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(ERole.USER, ERole.ADMIN)
     @ApiBearerAuth()
@@ -88,8 +97,12 @@ export class SchoolController {
         summary: 'Get a specific school',
     })
     @ApiResponse({
-        status: HttpStatus.OK,
-        type: SwaggerBaseApiResponse(SchoolOutput),
+        status: HttpStatus.UNAUTHORIZED,
+        type: BaseApiErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        type: BaseApiErrorResponse,
     })
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(ERole.USER, ERole.ADMIN)
@@ -121,6 +134,10 @@ export class SchoolController {
         status: HttpStatus.UNAUTHORIZED,
         type: BaseApiErrorResponse,
     })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        type: BaseApiErrorResponse,
+    })
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(ERole.ADMIN)
     @ApiBearerAuth()
@@ -130,12 +147,69 @@ export class SchoolController {
     ): Promise<BaseApiResponse<SchoolOutput>> {
         this.logger.log(ctx, `${this.getSchools.name} was called`);
 
-        const school = await this.schoolService.createSchool(ctx, body);
+        const school = await this.schoolService.create(ctx, body);
 
         const schoolOutput = plainToInstance(SchoolOutput, school, {
             excludeExtraneousValues: true,
         });
 
         return { data: schoolOutput, meta: {} };
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Put(':id')
+    @ApiOperation({
+        summary: 'Update a school',
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        type: BaseApiErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        type: BaseApiErrorResponse,
+    })
+    @UseGuards(JwtAuthGuard, SchoolRolesGuard)
+    @SchoolRoles(ESchoolRole.ADMIN)
+    @ApiBearerAuth()
+    async updateSchool(
+        @ReqContext() ctx: AuthenticatedRequestContext,
+        @Param('id', ParseIntPipe) id: number,
+        @Body() body: CreateSchoolInput,
+    ): Promise<BaseApiResponse<SchoolOutput>> {
+        this.logger.log(ctx, `${this.updateSchool.name} was called`);
+
+        const school = await this.schoolService.update(ctx, id, body);
+
+        const schoolOutput = plainToInstance(SchoolOutput, school, {
+            excludeExtraneousValues: true,
+        });
+
+        return { data: schoolOutput, meta: {} };
+    }
+
+    @UseInterceptors(ClassSerializerInterceptor)
+    @Delete(':id')
+    @ApiOperation({
+        summary: 'Delete a school',
+    })
+    @ApiResponse({
+        status: HttpStatus.UNAUTHORIZED,
+        type: BaseApiErrorResponse,
+    })
+    @ApiResponse({
+        status: HttpStatus.FORBIDDEN,
+        type: BaseApiErrorResponse,
+    })
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(ERole.ADMIN)
+    @ApiBearerAuth()
+    async deleteSchool(
+        @ReqContext() ctx: AuthenticatedRequestContext,
+        @Param('id', ParseIntPipe) id: number,
+    ): Promise<void> {
+        this.logger.log(ctx, `${this.deleteSchool.name} was called`);
+
+        await this.schoolService.delete(ctx, id);
     }
 }

@@ -1,7 +1,7 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { School } from '../../school/entities/school.entity';
-import { SchoolMember } from '../../schoolMember/entities/schoolMember.entity';
+import { SchoolMember } from '../../school-member/entities/schoolMember.entity';
 import { Subject } from '../../subject/entities/subject.entity';
 
 @Entity('subject_teachers')
