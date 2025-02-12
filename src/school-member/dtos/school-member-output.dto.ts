@@ -10,9 +10,6 @@ export class SchoolMemberOutput {
     @Transform(
         ({ obj, value }: { obj: SchoolMember | undefined; value: number }) =>
             obj?.user?.id ?? value,
-        {
-            toPlainOnly: true,
-        },
     )
     id: number;
 
@@ -21,20 +18,14 @@ export class SchoolMemberOutput {
     @Transform(
         ({ obj, value }: { obj: SchoolMember | undefined; value: number }) =>
             obj?.user?.firstName ?? value,
-        {
-            toPlainOnly: true,
-        },
     )
     firstName: string;
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @Expose()
     @Transform(
         ({ obj, value }: { obj: SchoolMember | undefined; value: number }) =>
             obj?.user?.lastName ?? value,
-        {
-            toPlainOnly: true,
-        },
     )
     lastName?: string;
 
@@ -43,9 +34,6 @@ export class SchoolMemberOutput {
     @Transform(
         ({ obj, value }: { obj: SchoolMember | undefined; value: number }) =>
             obj?.user?.email ?? value,
-        {
-            toPlainOnly: true,
-        },
     )
     email: string;
 
@@ -54,9 +42,6 @@ export class SchoolMemberOutput {
     @Transform(
         ({ obj, value }: { obj: SchoolMember | undefined; value: number }) =>
             obj?.user?.phone ?? value,
-        {
-            toPlainOnly: true,
-        },
     )
     phone?: string;
 
